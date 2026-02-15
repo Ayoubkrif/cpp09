@@ -1,0 +1,4 @@
+build/
+.cache/
+btc
+compile_commands.json
