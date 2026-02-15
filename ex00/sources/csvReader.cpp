@@ -10,18 +10,16 @@
 
 
 #include "bitcoin.hpp"
-#include <cstdio>
 #include <map>
 #include <sstream>
 #include <string>
+#include <fstream>
 
-std::map<std::string, std::string>	csvReader(const char* path)
+void	csvReader(const char* path, std::map<std::string, std::string>	&DataBase)
 {
-    std::stringstream ifs(path, std::ios::binary);
+    std::ifstream ifs(path, std::ios::binary);
     if (ifs.fail())
 		throw (std::runtime_error("Cannot open " + std::string(path)));
-
-	std::map<std::string, std::string>	DataBase;
 
 	std::string	line;
 	int			lineCount = 0;;
@@ -29,7 +27,8 @@ std::map<std::string, std::string>	csvReader(const char* path)
 	{
         std::stringstream lineStream(line);
         lineCount++;
-
+		if (lineCount == 1)
+			continue ;
 		std::pair<std::string, std::string>	cell;
 		int									cellCount = 0;
 
@@ -49,5 +48,4 @@ std::map<std::string, std::string>	csvReader(const char* path)
 		}
 		DataBase.insert(cell);
     }
-	return (DataBase);
 }

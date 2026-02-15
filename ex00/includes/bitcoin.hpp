@@ -15,5 +15,5 @@
 
 #include <map>
 #include <string>
-std::map<std::string, std::string>	csvReader(const char* path);
+void	csvReader(const char *, std::map<std::string, std::string>&);
 std::string	nbrToString(size_t nbr);
