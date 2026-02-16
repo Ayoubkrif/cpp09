@@ -50,7 +50,7 @@ static std::map<std::string, std::string>	csvReader(const char* path)
 
         std::string word;
 		// tant que je trouve un token
-		while (getline(lineStream, word, '\''))
+		while (getline(lineStream, word, ','))
 		{
 			// throw si trop de token par ligne
 			if (cellCount >= 2)
