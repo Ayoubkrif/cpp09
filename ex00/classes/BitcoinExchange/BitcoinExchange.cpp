@@ -16,7 +16,10 @@
 /*   Created: 2025/12/16 14:15:21 by cbordeau          #+#    #+#             */
 /* ************************************************************************** */
 
+#include <cstdlib>
+#include <iostream>
 #include <sstream>
+#include <stdexcept>
 
 static std::string	nbrToString(size_t nbr)
 {
@@ -29,13 +32,13 @@ static std::string	nbrToString(size_t nbr)
 #include <map>
 #include <fstream>
 
-static std::map<std::string, std::string>	csvReader(const char* path)
+static std::map<std::string, float>	csvReader(const char* path)
 {
     std::ifstream ifs(path, std::ios::binary);
     if (ifs.fail())
 		throw (std::runtime_error("Cannot open " + std::string(path)));
 
-	std::map<std::string, std::string>	DataBase;
+	std::map<std::string, float>	DataBase;
 
 	std::string	line;
 	int			lineCount = 0;;
@@ -59,7 +62,7 @@ static std::map<std::string, std::string>	csvReader(const char* path)
 			else if (cellCount == 0)
 				cell.first = word;
 			else if (cellCount == 1)
-				cell.second = word;
+				cell.second = std::atof(word.c_str());
 			cellCount++;
 		}
 		DataBase.insert(cell);
@@ -69,10 +72,68 @@ static std::map<std::string, std::string>	csvReader(const char* path)
 
 #include "BitcoinExchange.hpp"
 
-const std::map<std::string, std::string>	BitcoinExchange::csv = csvReader(DB);
+const std::map<std::string, float>	BitcoinExchange::csv = csvReader(DB);
 
 BitcoinExchange::BitcoinExchange(void)
+{
+	throw (std::runtime_error("Should not be called !"));
+}
+
+BitcoinExchange	BitcoinExchange::operator=(const BitcoinExchange &rhs)
+{
+	(void)rhs;
+	throw (std::runtime_error("Should not be called !"));
+}
+
+BitcoinExchange::~BitcoinExchange(void)
 {}
 
-BitcoinExchange::BitcoinExchange(const char *path) : _input(path)
-{}
+BitcoinExchange::BitcoinExchange(const char *path)
+{
+    std::ifstream ifs(path, std::ios::binary);
+    if (ifs.fail())
+		throw (std::runtime_error("Cannot open " + std::string(path)));
+
+	std::string	line;
+	int			lineCount = 0;;
+	while (std::getline(ifs, line))
+	{
+        std::stringstream lineStream(line);
+        lineCount++;
+		if (lineCount == 1)
+			continue ;
+		std::pair<std::string, std::string>	cell;
+		int									cellCount = 0;
+
+		std::string word;
+		// tant que je trouve un token
+		while (lineStream >> word)
+		{
+			cellCount++;
+			if (cellCount == 1)
+			{
+				cell.first = word;
+			}
+			else if (cellCount == 2)
+			{
+				if (word != "|")
+					break ;
+			}
+			else if (cellCount == 3)
+			{
+				cell.second = word;
+			}
+		}
+		if (cellCount != 3)
+		{
+			std::cout << "malformated line "+nbrToString(lineCount)+":"+ line << std::endl;
+			continue ;
+		}
+		// todo :
+		// check date format / value
+		// check num format / value
+		// insert date
+		// check lower date
+		// print value num * map[date].value
+	}
+}

@@ -17,12 +17,11 @@ OBJ_DIR   = build
 # Sources files listing
 SRC_FILES = \
 	main.cpp \
-	nbrToString.cpp \
-	csvReader.cpp \
 	\
 
 # Classes files listing
 CLASS_FILES = \
+	BitcoinExchange/BitcoinExchange.cpp
 
 CLASSES = $(addprefix $(CLASS_DIR)/, $(CLASS_FILES))
 SOURCES = $(addprefix $(SRC_DIR)/,$(SRC_FILES))
@@ -30,7 +29,7 @@ SOURCES = $(addprefix $(SRC_DIR)/,$(SRC_FILES))
 # include directories
 INC_DIR = \
 	includes \
-		$(CLASS_DIR)/ \
+		$(CLASS_DIR)/BitcoinExchange \
 
 ##################################################################################
 #compilation

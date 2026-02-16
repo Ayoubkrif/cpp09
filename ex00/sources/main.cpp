@@ -5,23 +5,16 @@
 /* ************************************************************************** */
 
 
-#include "bitcoin.hpp"
+#include "BitcoinExchange.hpp"
 #include <exception>
 #include <iostream>
-#include <map>
-#include <string>
-
 
 int	main(int argc, char *argv[])
 {
 	(void)argc, (void)argv;
 	try
 	{
-		std::map<std::string, std::string>	csv;
-		csvReader(DB, csv);
-		std::cout << csv.size() << " lines:" << std::endl;
-		for (std::map<std::string, std::string>::iterator it = csv.begin(); it != csv.end(); it++)
-			std::cout << it->first+","+it->second << std::endl;
+		BitcoinExchange("input.txt");
 	}
 	catch (std::exception &e)
 	{

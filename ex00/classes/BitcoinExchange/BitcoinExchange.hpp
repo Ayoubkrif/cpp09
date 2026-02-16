@@ -15,15 +15,15 @@ const char	*DB = "data.csv";
 class BitcoinExchange
 {
 	public:
-		BitcoinExchange(void);
 		BitcoinExchange(const char *);
 		~BitcoinExchange(void);
 
-		BitcoinExchange	operator=(const BitcoinExchange &);
-
 	private:
-		const static std::map<std::string, std::string>	csv;
-		std::string	_input;
+		const static std::map<std::string, float>	csv;
+
+/**/		BitcoinExchange(void);
+/**/		BitcoinExchange	operator=(const BitcoinExchange &);
+
 };
 
 std::string	nbrToString(size_t nbr);
