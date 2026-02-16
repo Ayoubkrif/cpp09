@@ -9,12 +9,21 @@
 
 #include <string>
 #include <map>
+
+const char	*DB = "data.csv";
+
 class BitcoinExchange
 {
-	static const char	DB[];
-	static std::map<std::string, std::string>	csv;
 	public:
-		std::map<std::string, std::string>	csvReader(const char* path);
+		BitcoinExchange(void);
+		BitcoinExchange(const char *);
+		~BitcoinExchange(void);
+
+		BitcoinExchange	operator=(const BitcoinExchange &);
+
+	private:
+		const static std::map<std::string, std::string>	csv;
+		std::string	_input;
 };
 
 std::string	nbrToString(size_t nbr);

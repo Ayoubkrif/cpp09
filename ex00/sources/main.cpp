@@ -11,7 +11,6 @@
 #include <map>
 #include <string>
 
-const char	*DB = "data.csv";
 
 int	main(int argc, char *argv[])
 {

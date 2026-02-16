@@ -18,7 +18,7 @@
 
 #include <sstream>
 
-std::string	nbrToString(size_t nbr)
+static std::string	nbrToString(size_t nbr)
 {
 	std::ostringstream oss;
 	oss << nbr;
@@ -27,15 +27,15 @@ std::string	nbrToString(size_t nbr)
 }
 
 #include <map>
-#include <sstream>
-#include <string>
 #include <fstream>
 
-void	csvReader(const char* path, std::map<std::string, std::string>	&DataBase)
+static std::map<std::string, std::string>	csvReader(const char* path)
 {
     std::ifstream ifs(path, std::ios::binary);
     if (ifs.fail())
 		throw (std::runtime_error("Cannot open " + std::string(path)));
+
+	std::map<std::string, std::string>	DataBase;
 
 	std::string	line;
 	int			lineCount = 0;;
@@ -64,14 +64,15 @@ void	csvReader(const char* path, std::map<std::string, std::string>	&DataBase)
 		}
 		DataBase.insert(cell);
     }
+	return (DataBase);
 }
 
 #include "BitcoinExchange.hpp"
-#include <iostream>
 
-const char	BitcoinExchange::DB[] = "data.csv";
+const std::map<std::string, std::string>	BitcoinExchange::csv = csvReader(DB);
 
-int main (void)
-{
-	return 0;
-}
+BitcoinExchange::BitcoinExchange(void)
+{}
+
+BitcoinExchange::BitcoinExchange(const char *path) : _input(path)
+{}
