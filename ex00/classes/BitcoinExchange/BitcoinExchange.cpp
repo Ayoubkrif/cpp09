@@ -68,6 +68,8 @@ static std::map<std::string, float>	csvReader(const char* path)
 		}
 		DataBase.insert(cell);
     }
+	if (DataBase.empty())
+		throw (std::runtime_error("Empty data base !"));
 	return (DataBase);
 }
 
@@ -209,12 +211,13 @@ BitcoinExchange::BitcoinExchange(const char *path)
 			continue ;
 		}
 		// check lower date
-		std::map<std::string, float>::const_iterator it = csv.lower_bound(cell.first);
-		if (it == csv.end())
+		std::map<std::string, float>::const_iterator it = csv.upper_bound(cell.first);
+		if (it == csv.begin())
 		{
-			std::cout << "end "+ cell.first << " line " << nbrToString(lineCount)+": '"+ line+"'" << std::endl;
+			std::cout << "No data for period "+ cell.first << " line " << nbrToString(lineCount)+": '"+ line+"'" << std::endl;
 			continue ;
 		}
+		it--;
 		// print value num * map[date].value
 		std::cout << cell.first+" => "+cell.second+" = " << (it->second * nb) << std::endl;
 	}
