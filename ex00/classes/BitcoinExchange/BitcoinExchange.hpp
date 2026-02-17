@@ -10,8 +10,6 @@
 #include <string>
 #include <map>
 
-const char	*DB = "data.csv";
-
 class BitcoinExchange
 {
 	public:
