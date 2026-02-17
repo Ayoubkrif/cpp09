@@ -148,6 +148,12 @@ BitcoinExchange::BitcoinExchange(const char *path)
     if (ifs.fail())
 		throw (std::runtime_error("Cannot open " + std::string(path)));
 
+	for (std::map<std::string, float>::const_iterator it = csv.begin(); it != csv.end() ; it++)
+	{
+	  std::cout << it->first << std::endl;
+	}
+	std::cout << std::endl;
+
 	std::string	line;
 	int			lineCount = 0;;
 	while (std::getline(ifs, line))
@@ -204,9 +210,9 @@ BitcoinExchange::BitcoinExchange(const char *path)
 		}
 		// check lower date
 		std::map<std::string, float>::const_iterator it = csv.lower_bound(cell.first);
-		if (it == csv.begin())
+		if (it == csv.end())
 		{
-			std::cout << "No data for "+ cell.first << " line " << nbrToString(lineCount)+": '"+ line+"'" << std::endl;
+			std::cout << "end "+ cell.first << " line " << nbrToString(lineCount)+": '"+ line+"'" << std::endl;
 			continue ;
 		}
 		// print value num * map[date].value
