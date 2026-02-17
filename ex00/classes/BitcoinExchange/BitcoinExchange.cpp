@@ -160,7 +160,7 @@ BitcoinExchange::BitcoinExchange(const char *path)
 		int									cellCount = 0;
 
 		std::string word;
-		// tant que je trouve un token
+		// while token availaible
 		while (lineStream >> word)
 		{
 			cellCount++;
@@ -180,38 +180,33 @@ BitcoinExchange::BitcoinExchange(const char *path)
 		}
 		if (cellCount != 3)
 		{
-			std::cout << "Bad input line "+nbrToString(lineCount)+":"+ line << std::endl;
+			std::cout << "Bad input line "+nbrToString(lineCount)+": '"+ line+"'" << std::endl;
 			continue ;
 		}
 		// check date format / value
 		if (!checkDateFormat(cell.first))
 		{
-			std::cout << "Bad date line "+nbrToString(lineCount)+":"+ line << std::endl;
+			std::cout << "Bad date line "+nbrToString(lineCount)+": '"+ line+"'" << std::endl;
 			continue ;
 		}
 		// check num format / value
 		if (cell.second.find_first_not_of("0123456789") != std::string::npos)
 		{
-			std::cout << "Value must be number only line "+nbrToString(lineCount)+":"+ line << std::endl;
+			std::cout << "Value must be number only line "+nbrToString(lineCount)+": '"+ line+"'" << std::endl;
 			continue ;
 		}
 		long int	nb = std::strtol(cell.second.c_str(), NULL, 10);
 
 		if (errno || nb < 0 || nb > 1000)
 		{
-			std::cout << "Value must be between 0 and 999 "+nbrToString(lineCount)+":"+ line << std::endl;
+			std::cout << "Value must be between 0 and 999 "+nbrToString(lineCount)+": '"+ line+"'" << std::endl;
 			continue ;
 		}
 		// check lower date
 		std::map<std::string, float>::const_iterator it = csv.lower_bound(cell.first);
 		if (it == csv.begin())
 		{
-			std::cout << "Iterator begin "+nbrToString(lineCount)+":"+ line << std::endl;
-			continue ;
-		}
-		else if (it == csv.end())
-		{
-			std::cout << "Iterator end "+nbrToString(lineCount)+":"+ line << std::endl;
+			std::cout << "No data for "+ cell.first << " line " << nbrToString(lineCount)+": '"+ line+"'" << std::endl;
 			continue ;
 		}
 		// print value num * map[date].value
