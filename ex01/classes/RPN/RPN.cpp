@@ -85,7 +85,7 @@ void	RPN::compute(char op)
 {
 	if (_Stack.size() < 2)
 			throw (std::runtime_error("Unexpected token "+ nbrToString(tokenCount) + ": not a number:'"+_token+"'"));
-	int	first, second;
+	int	first, second, result;
 	first = _Stack.top();
 	_Stack.pop();
 	second = _Stack.top();
@@ -93,19 +93,19 @@ void	RPN::compute(char op)
 	switch (op)
 	{
 		case '+':
-			first += second;
+			result = second + first;
 		break ;
 		case '-':
-			first -= second;
+			result = second - first;
 		break ;
 		case '*':
-			first *= second;
+			result = second * first;
 		break ;
 		case '/':
-			first /= second;
+			result = second / first;
 		break ;
 		default:
 			throw (std::runtime_error("Unrecognised token "+ nbrToString(tokenCount) + ":'"+_token+"'"));
 	}
-	_Stack.push(first);
+	_Stack.push(result);
 }
