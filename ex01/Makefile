@@ -33,7 +33,7 @@ INC_DIR = \
 
 ##################################################################################
 #compilation
-NAME		= WebServ
+NAME		= RPN
 CC			= c++
 CFLAGS 		= -Wall -Wextra -Werror -std=c++98 -MMD -MP -g3
 PREPROC		=

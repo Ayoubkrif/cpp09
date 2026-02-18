@@ -9,6 +9,7 @@
 #include "RPN.hpp"
 #include <cctype>
 #include <cstdlib>
+#include <iostream>
 #include <stdexcept>
 
 RPN::RPN(void)
@@ -45,7 +46,7 @@ static std::string	nbrToString(size_t nbr)
 	return str;
 }
 
-RPN::RPN(const char *expr)
+RPN::RPN(const char *expr): tokenCount(0)
 {
 	std::stringstream	tokenStream(expr);
 
@@ -62,11 +63,28 @@ RPN::RPN(const char *expr)
 			_Stack.push(std::atoi(_token.c_str()));
 		else
 			compute(_token[0]);
+		tokenCount++;
 	}
+	if (_Stack.size() == 0)
+		throw (std::runtime_error("Empty Stack !"));
+	if (_Stack.size() >  1)
+	{
+		std::string	error;
+		while (_Stack.size())
+		{
+			error.append(" ");
+			error.append(nbrToString(_Stack.top()));
+			_Stack.pop();
+		}
+		throw (std::runtime_error("More than one element left in the stack:" + error));
+	}
+	std::cout << _Stack.top() << std::endl;
 }
 
 void	RPN::compute(char op)
 {
+	if (_Stack.size() < 2)
+			throw (std::runtime_error("Unexpected token "+ nbrToString(tokenCount) + ": not a number:'"+_token+"'"));
 	int	first, second;
 	first = _Stack.top();
 	_Stack.pop();
