@@ -102,6 +102,8 @@ void	RPN::compute(char op)
 			result = second * first;
 		break ;
 		case '/':
+			if (first == 0)
+				throw (std::runtime_error("Unexpected by 0 division at token "+ nbrToString(tokenCount) + ": '"+_token+"'"));
 			result = second / first;
 		break ;
 		default:
