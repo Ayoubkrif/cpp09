@@ -1,3 +1,7 @@
-objs/
+# lsp
 .cache/
 compile_commands.json
+# obj
+build/
+# exec
+PmergeMe
