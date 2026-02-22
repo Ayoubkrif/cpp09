@@ -21,6 +21,8 @@ SRC_FILES = \
 
 # Classes files listing
 CLASS_FILES = \
+	PmergeMe/PmergeMe.cpp \
+	\
 
 CLASSES = $(addprefix $(CLASS_DIR)/, $(CLASS_FILES))
 SOURCES = $(addprefix $(SRC_DIR)/,$(SRC_FILES))
@@ -28,11 +30,11 @@ SOURCES = $(addprefix $(SRC_DIR)/,$(SRC_FILES))
 # include directories
 INC_DIR = \
 	includes \
-		$(CLASS_DIR)/ \
+		$(CLASS_DIR)/PmergeMe \
 
 ##################################################################################
 #compilation
-NAME		= WebServ
+NAME		= PmergeMe
 CC			= c++
 CFLAGS 		= -Wall -Wextra -Werror -std=c++98 -MMD -MP -g3
 PREPROC		=
