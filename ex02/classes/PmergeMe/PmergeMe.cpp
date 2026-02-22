@@ -9,6 +9,17 @@
 #include "PmergeMe.hpp"
 
 
+static std::vector<unsigned int>
+recursiveSort
+(std::vector<unsigned int> &input)
+{
+	for (unsigned int i = 0; i < input.size(); i += 2)
+	{
+		;
+	}
+	return (input);
+}
+
 void	PmergeMe::sort(char **numbers, int n)
 {
 	std::vector<unsigned int>	v;
@@ -16,6 +27,7 @@ void	PmergeMe::sort(char **numbers, int n)
 
 	fillContainer(v, d, numbers, n);
 	iter(v, print<unsigned int>);
+	recursiveSort(v);
 }
 
 PmergeMe
