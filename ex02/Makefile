@@ -78,3 +78,14 @@ re: fclean
 bear:
 	bear -- make re
 .PHONY: bear
+
+test:
+	SHUF=$(echo '11 2 17 0 16 8 6 15 10 3 21 1 18 9 14 19 12 5 4 20 13 7')
+	/home/aykrifa/Desktop/repo/cpp09/ex02/PmergeMe $SHUF
+	/home/aykrifa/Downloads/cpp09/ex02/PmergeMe $SHUF
+
+shuf:
+	SHUF=$(shuf -i 0-9 -n 10)
+	/home/aykrifa/Desktop/repo/cpp09/ex02/PmergeMe $SHUF
+	/home/aykrifa/Downloads/cpp09/ex02/PmergeMe $SHUF
+

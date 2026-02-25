@@ -26,15 +26,19 @@ recursiveSort
 (std::vector<unsigned int> &input, unsigned int sizeOfElement)
 {
 	unsigned int sizeOfPair = 2 * sizeOfElement;
-	for // each possible pair
+	for //for each pair:
 	(unsigned int i = 0; (i + 1) * sizeOfPair <= input.size(); i++)
 	{
+	//COMPARE:
+		// last number of the current element
+		// last number of the next element
 		if (input[i * sizeOfPair] > input[(i * sizeOfPair) + sizeOfElement])
 		{
+			// put larger at the end
 			rotateRange(input, i * sizeOfPair, (i * sizeOfPair) + sizeOfElement, (i + 1) * sizeOfPair);
 		}
 	}
-	if // si on peut faire au moins une paire de paire
+	if // if we can pair elements made by ACTUAL pairs
 	(sizeOfPair * 2 <= input.size())
 		recursiveSort(input, sizeOfPair);
 }
