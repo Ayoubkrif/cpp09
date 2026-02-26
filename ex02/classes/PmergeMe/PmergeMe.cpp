@@ -32,7 +32,7 @@ recursiveSort
 	//COMPARE:
 		// last number of the current element
 		// last number of the next element
-		if (input[i * sizeOfPair] > input[(i * sizeOfPair) + sizeOfElement])
+		if (input[(i * sizeOfPair) + sizeOfElement - 1] > input[(i * sizeOfPair) + sizeOfElement + sizeOfElement - 1])
 		{
 			// put larger at the end
 			rotateRange(input, i * sizeOfPair, (i * sizeOfPair) + sizeOfElement, (i + 1) * sizeOfPair);
@@ -41,6 +41,7 @@ recursiveSort
 	if // if we can pair elements made by ACTUAL pairs
 	(sizeOfPair * 2 <= input.size())
 		recursiveSort(input, sizeOfPair);
+	;
 }
 
 void	PmergeMe::sort(char **numbers, int n)

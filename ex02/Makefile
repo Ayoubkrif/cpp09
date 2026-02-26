@@ -72,20 +72,31 @@ fclean: clean
 .PHONY: fclean
 
 re: fclean
-	make all
+	$(MAKE) all
 .PHONY: re
 
 bear:
 	bear -- make re
 .PHONY: bear
 
+CPP09 = /home/aykrifa/Desktop/repo/cpp09/ex02/
+CL_CPP09 = /home/aykrifa/Downloads/cpp09/ex02/
+
+both:
+	$(MAKE) -C $(CPP09) && $(MAKE) -C $(CL_CPP09)
+
+# TEST= $(shell echo '11 2 17 0 16 8 6 15 10 3 21 1 18 9 14 19 12 5 4 20 13 7 23')
 test:
-	SHUF=$(echo '11 2 17 0 16 8 6 15 10 3 21 1 18 9 14 19 12 5 4 20 13 7')
-	/home/aykrifa/Desktop/repo/cpp09/ex02/PmergeMe $SHUF
-	/home/aykrifa/Downloads/cpp09/ex02/PmergeMe $SHUF
+	$$TEST="$$(echo '11 2 17 0 16 8 6 15 10 3 21 1 18 9 14 19 12 5 4 20 13 7 23')" && \
+	$(CPP09)$(NAME)		$$TEST > 1.temp && \
+	$(CL_CPP09)$(NAME)	$$TEST > 2.temp && \
+	diff 1.temp 2.temp && \
+	rm 1.temp 2.temp
 
+# SHUF= $(shell shuf -i 0-9 -n 10)
 shuf:
-	SHUF=$(shuf -i 0-9 -n 10)
-	/home/aykrifa/Desktop/repo/cpp09/ex02/PmergeMe $SHUF
-	/home/aykrifa/Downloads/cpp09/ex02/PmergeMe $SHUF
-
+	SHUF="$$(shuf -i 0-9 -n 10)" && \
+	$(CPP09)$(NAME)		$$SHUF > 1.temp && \
+	$(CL_CPP09)$(NAME)	$$SHUF > 2.temp && \
+	diff 1.temp 2.temp && \
+	rm 1.temp 2.temp
