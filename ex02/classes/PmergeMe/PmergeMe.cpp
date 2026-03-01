@@ -10,20 +10,10 @@
 #include "PmergeMe.hpp"
 
 
-void
-rotateRange
-(std::vector<unsigned int> &input, unsigned int start, unsigned int middle, unsigned int last)
-{
-	std::vector<unsigned int>::iterator	it_start = input.begin() + start;
-	std::vector<unsigned int>::iterator	it_middle = input.begin() + middle;
-	std::vector<unsigned int>::iterator	it_last = input.begin() + last;
-	std::rotate(it_start, it_middle, it_last);
-}
-
 /*static std::vector<unsigned int>*/
 void
 recursiveSort
-(std::vector<unsigned int> &input, unsigned int sizeOfElement)
+(std::vector<std::pair<unsigned int, unsigned int> > &input, unsigned int sizeOfElement)
 {
 	unsigned int sizeOfPair = 2 * sizeOfElement;
 	for //for each pair:
@@ -46,15 +36,15 @@ recursiveSort
 
 void	PmergeMe::sort(char **numbers, int n)
 {
-	std::vector<unsigned int>	v;
-	std::deque<unsigned int>	d;
+	std::vector<std::pair<unsigned int, unsigned int> >	v;
+	std::deque<std::pair<unsigned int, unsigned int> >	d;
 
 	fillContainer(v, d, numbers, n);
-	iter(v, print<unsigned int>);
+	iter(v, print<std::pair<unsigned int, unsigned int> >);
 	std::cout << std::endl;
 	recursiveSort(v, 1);
 	// rotateRange(v, 0, v.size() / 2, v.size());
-	iter(v, print<unsigned int>);
+	iter(v, print<std::pair<unsigned int, unsigned int> >);
 	std::cout << std::endl;
 }
 
