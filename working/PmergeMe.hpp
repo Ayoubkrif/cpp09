@@ -1,5 +1,17 @@
-#ifndef PMERGEME_HPP
-#define PMERGEME_HPP
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   PmergeMe.hpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aykrifa <aykrifa@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/03/05 13:03:39 by aykrifa           #+#    #+#             */
+/*                                                                            */
+/* ************************************************************************** */
+
+
+
+#pragma once
 
 #include <string>
 #include <iomanip>
@@ -17,7 +29,8 @@
 #include <map>
 #include <algorithm>
 
-class PmergeMe {
+class PmergeMe
+{
 
 public:
 
@@ -43,7 +56,3 @@ private:
 	bool 				isNumeric(const std::string &token);
 
 };
-
-
-#endif // PmergeMe_HPP
-

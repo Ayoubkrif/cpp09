@@ -32,7 +32,7 @@ fclean : clean
 	@echo "$(VIOLET)​🧼​🧼​🧼🧼 Successfully cleaned all! 🧼​​🧼​​🧼​🧼$(RESET)"
 
 shuf:
-	SHUF="$$(shuf -i 0-9 -n 10)" && \
+	SHUF="$$(shuf -i 0-999 -n 1000)" && \
 	./$(NAME)	$$SHUF
 
 re : fclean $(NAME)

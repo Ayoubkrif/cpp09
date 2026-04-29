@@ -1,7 +1,5 @@
 #include "PmergeMe.hpp"
-#include <iterator>
-#include <stdexcept>
-#include <vector>
+#include <iostream>
 
 PmergeMe::PmergeMe(int ac, char** av) : _vecTime(0)
 {
@@ -56,7 +54,6 @@ void PmergeMe::parseArguments(int ac, char** av)
 			if (it != set.end())
 				throw std::runtime_error ("Error : double integer detected");
 			_vec.push_back(ivalue);
-			_NotSorted.push_back(token);
 			set.insert(ivalue);
 		}
 	}
@@ -105,7 +102,6 @@ void PmergeMe::run()
 	printBefore();
 
 	int	compVec = 0;
-	int	compDeq = 0;
 	int	compMax = F(_vec.size());
 
 	clock_t start = clock();
@@ -117,21 +113,20 @@ void PmergeMe::run()
 	compVec = count;
 	count = 0;
 
-
 	printAfter(tmp_vec);
 	printTimes();
-	if (compMax < compVec || compMax < compDeq)
+	std::cerr << "MAX:" << compMax << std::endl;
+	std::cerr << "Vec:" << compVec <<"("<<compVec - vectcompFinal<<")"<<"("<< vectcompFinal <<")"<< std::endl;
+	if (compMax < compVec)
 	{
-		std::cerr << "MAX:" << compMax << std::endl;
-		std::cerr << "Vec:" << compVec <<"("<<compVec - vectcompFinal<<")"<<"("<< vectcompFinal <<")"<< std::endl;
 		std::cerr << "exceed by:" << compVec - compMax << std::endl;
 		for (std::vector<std::string>::iterator it = _NotSorted.begin(); it < _NotSorted.end(); it++)
 		{
 			std::cerr << *it + " ";
 		}
 		std::cerr << std::endl;
+		throw (std::runtime_error("Arthur psm"));
 	}
-	throw (std::runtime_error("Arthur psm"));
 }
 
 void PmergeMe::printBefore()
@@ -175,34 +170,71 @@ std::vector<int> PmergeMe::sortVector(std::vector<int>& tmp_vec)
 		
 		int a = tmp_vec[i];
 		int b = tmp_vec[i + 1];
-		vectcompFinal++;
 		if (counter(a, b))
 			pairs.push_back(std::make_pair(b, a));
 		else
 			pairs.push_back(std::make_pair(a, b));
+		grands.push_back(pairs.back().first);
 	}
 	if (hasUnpaired)
 		unpaired = tmp_vec.back();
-	for (size_t i = 0; i < pairs.size(); i++)
-		grands.push_back(pairs[i].first);
 	std::vector<int> sortedGrands = sortVector(grands);
-
+	
+	std::cout << "start insertion " << std::endl;
 	std::vector<size_t> jacobliste = generateJacobsthalList(pairs.size() + hasUnpaired);
+	for (size_t i = 0; i < pairs.size() + hasUnpaired; i++)
+	{
+		std::vector<int>::iterator	big;
+		int							small;
+		
+		if (hasUnpaired && jacobliste[i] == pairs.size())
+		{
+			big = sortedGrands.end();
+			small = unpaired;
+		}
+		else
+		{
+			big = std::lower_bound(sortedGrands.begin(), sortedGrands.end(), pairs[jacobliste[i]].first);
+			small = pairs[jacobliste[i]].second;
+		}
+
+		std::cout << "counter before: " << count << std::endl;
+		std::vector<int>::iterator it = std::lower_bound(sortedGrands.begin(), big, small, counter);
+		std::cout << "counter after : " << count << std::endl;
+		sortedGrands.insert(it, small);
+	}
+	std::cout << "end insertion " << std::endl;
+
+	// if (hasUnpaired)
+	// {
+	// 	std::vector<int>::iterator it = std::lower_bound(sortedGrands.begin(), sortedGrands.end(), unpaired, counter);
+	// 	sortedGrands.insert(it, unpaired);
+	// }
+	return sortedGrands;
+}
+
+/*
 	for (size_t i = 0; i < pairs.size(); i++)
 	{
-		size_t big = std::lower_bound(sortedGrands.begin(), sortedGrands.end(), pairs[jacobliste[i]].first) - sortedGrands.begin();
-		int small = pairs[jacobliste[i]].second;
-		std::vector<int>::iterator it = std::lower_bound(sortedGrands.begin(), sortedGrands.begin() + big /*+ 1*/, small, counter);
+		if (hasUnpaired && jacobliste[i] == pairs.size())
+		{
+			std::vector<int>::iterator it = std::lower_bound(sortedGrands.begin(), sortedGrands.end(), unpaired, counter);
+			sortedGrands.insert(it, unpaired);
+
+			size_t big = sortedGrands.back();
+			int small = pairs[jacobliste[i]].second;
+		}
+		else
+		{
+			size_t big = std::lower_bound(sortedGrands.begin(), sortedGrands.end(), pairs[jacobliste[i]].first) - sortedGrands.begin();
+			int small = pairs[jacobliste[i]].second;
+		}
+		std::vector<int>::iterator it = std::lower_bound(sortedGrands.begin(), sortedGrands.begin() + big, small, counter);
 		sortedGrands.insert(it, small);
 	}
 
-	if (hasUnpaired)
-	{
-		std::vector<int>::iterator it = std::lower_bound(sortedGrands.begin(), sortedGrands.end(), unpaired, counter);
-		sortedGrands.insert(it, unpaired);
-	}
 	return sortedGrands;
-}
+* */
 
 std::vector<size_t> PmergeMe::generateJacobsthalList(size_t limit)
 {
@@ -227,10 +259,10 @@ std::vector<size_t> PmergeMe::generateJacobsthalList(size_t limit)
 	for (size_t i = 1; i < jacoblist.size(); i++)
 	{
 		size_t start = jacoblist[i - 1];
-		size_t end   = jacoblist[i];
+  	  	size_t end   = jacoblist[i];
 
 		for (size_t i = end; i > start; --i)
-			indices.push_back(i - 1);
+      		indices.push_back(i - 1);
 	}
 
 	// for (size_t i = 0; i < indices.size(); i++)
