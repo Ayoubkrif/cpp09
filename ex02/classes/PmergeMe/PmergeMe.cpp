@@ -6,49 +6,76 @@
 
 #include <algorithm>
 #include <deque>
+#include <utility>
 #include <vector>
 #include "PmergeMe.hpp"
 
+
+// Put greaters elements of the main chain after smallers
+// duplicate smallers in a chain named pend
 void
 swapMain
+(std::vector<int> &main, std::vector<int>::size_type sizeOfElement)
+{
+	std::vector<int> newMain;
+	// alloc main size in vector
+    newMain.reserve(main.size());
+
+	int	step = sizeOfElement * 2;
+	// for each pair of block of number (element)
+	for (std::vector<int>::iterator firstRangeBegin = main.begin();
+	firstRangeBegin < main.end();
+	firstRangeBegin += step)
+	{
+		std::vector<int>::iterator	firstRangeEnd = firstRangeBegin + sizeOfElement;
+		std::vector<int>::iterator	firstRangeElementToCompare = firstRangeEnd - 1;
+
+		std::vector<int>::iterator	secondRangeBegin = firstRangeEnd;
+		std::vector<int>::iterator	secondRangeEnd = firstRangeBegin + step;
+		std::vector<int>::iterator	secondRangeElementToCompare = secondRangeEnd - 1;
+		// Compare last number of each elements
+		if (*firstRangeElementToCompare > *secondRangeElementToCompare)
+		{
+			// Put greaters elements after smallers
+            newMain.insert(newMain.end(), secondRangeBegin, secondRangeEnd);
+            newMain.insert(newMain.end(), firstRangeBegin, firstRangeEnd);
+		}
+		else
+			// Put greaters elements after smallers
+            newMain.insert(newMain.end(), firstRangeBegin, secondRangeEnd);
+	}
+	// append orphans
+    newMain.insert(newMain.end(), main.begin() + newMain.size(), main.end());
+	main.swap(newMain);
+}
+
+void
+swapMainChain
 (std::vector<int> &main, std::vector<int>::size_type sizeOfElement)
 {
 	for (int i = sizeOfElement - 1; i + sizeOfElement < main.size(); i += sizeOfElement * 2)
 	{
 		if (main[i] > main[i + sizeOfElement])
 		{
-			swap(main, sizeOfElement, i, i + sizeOfElement);
+			rotatewithstdrotate(main, sizeOfElement, i, i + sizeOfElement);
 		}
-		// VectComp++;
 	}
 }
 
-std::vector<int>
-createPend
+// trim pending elements that lost against winners
+void
+trimSmallersFromMainChain
 (std::vector<int> &main, int sizeOfElement)
 {
-	std::vector<int> pend;
-	int i = 0;
-	std::vector<int>::size_type maxPair = (main.size() / sizeOfElement); //division is usefull to remove non complete elements
+	// maxPair before end or before reminder elements
+	size_t maxPair = (main.size() / sizeOfElement);
 
 	std::vector<int>::iterator it = main.begin();
-	while (it != main.end() && pend.size() < maxPair * sizeOfElement)
+	for (size_t i = 0; i < maxPair; i++)
 	{
-		if (std::distance(it, main.end()) < sizeOfElement && i == 0)
-			break;
-		if (i == sizeOfElement)
-		{
-			i = 0;
+			it = main.erase(it, it + sizeOfElement);
 			it += sizeOfElement;
-		}
-		else
-		{
-			pend.push_back(*it);
-			it = main.erase(it);
-			i += 1;
-		}
 	}
-	return pend;
 }
 
 int	holdingToConsider(std::vector<int> holding, int nbToPlaceId, int sizeOfElement)
