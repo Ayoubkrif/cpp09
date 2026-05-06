@@ -10,72 +10,70 @@
 #include <vector>
 #include "PmergeMe.hpp"
 
-
 // Put greaters elements of the main chain after smallers
 // duplicate smallers in a chain named pend
 void
-swapMain
+sort2By2
 (std::vector<int> &main, std::vector<int>::size_type sizeOfElement)
 {
 	std::vector<int> newMain;
 	// alloc main size in vector
-    newMain.reserve(main.size());
-
+	newMain.reserve(main.size());
 	int	step = sizeOfElement * 2;
 	// for each pair of block of number (element)
-	for (std::vector<int>::iterator firstRangeBegin = main.begin();
-	firstRangeBegin < main.end();
-	firstRangeBegin += step)
+	for (std::vector<int>::iterator secondRangeElementToCompare = main.begin() + step - 1;
+	secondRangeElementToCompare < main.end();
+	secondRangeElementToCompare += step)
 	{
+		std::vector<int>::iterator	firstRangeBegin = secondRangeElementToCompare + 1 - step;
 		std::vector<int>::iterator	firstRangeEnd = firstRangeBegin + sizeOfElement;
 		std::vector<int>::iterator	firstRangeElementToCompare = firstRangeEnd - 1;
-
 		std::vector<int>::iterator	secondRangeBegin = firstRangeEnd;
-		std::vector<int>::iterator	secondRangeEnd = firstRangeBegin + step;
-		std::vector<int>::iterator	secondRangeElementToCompare = secondRangeEnd - 1;
+		std::vector<int>::iterator	secondRangeEnd = secondRangeElementToCompare + 1;
 		// Compare last number of each elements
 		if (*firstRangeElementToCompare > *secondRangeElementToCompare)
 		{
 			// Put greaters elements after smallers
-            newMain.insert(newMain.end(), secondRangeBegin, secondRangeEnd);
-            newMain.insert(newMain.end(), firstRangeBegin, firstRangeEnd);
+			newMain.insert(newMain.end(), secondRangeBegin, secondRangeEnd);
+			newMain.insert(newMain.end(), firstRangeBegin, firstRangeEnd);
 		}
 		else
 			// Put greaters elements after smallers
-            newMain.insert(newMain.end(), firstRangeBegin, secondRangeEnd);
+			newMain.insert(newMain.end(), firstRangeBegin, secondRangeEnd);
 	}
 	// append orphans
-    newMain.insert(newMain.end(), main.begin() + newMain.size(), main.end());
+	newMain.insert(newMain.end(), main.begin() + newMain.size(), main.end());
 	main.swap(newMain);
 }
 
+// append pending elements that lost against greaters in pend chain
+// trim them from main chain by putting it in newmain chain that is swapped
 void
-swapMainChain
-(std::vector<int> &main, std::vector<int>::size_type sizeOfElement)
+extractPend
+(std::vector<int> &main, std::vector<int> &pend, int sizeOfElement)
 {
-	for (int i = sizeOfElement - 1; i + sizeOfElement < main.size(); i += sizeOfElement * 2)
+	std::vector<int> newMain;
+	// alloc main size in vector
+	newMain.reserve(main.size());
+	pend.reserve(main.size());
+	int step = sizeOfElement * 2;
+	// for each pair of block of number (element)
+	for (std::vector<int>::iterator secondRangeElementToCompare = main.begin() + step - 1;
+	secondRangeElementToCompare < main.end();
+	secondRangeElementToCompare += step)
 	{
-		if (main[i] > main[i + sizeOfElement])
-		{
-			rotatewithstdrotate(main, sizeOfElement, i, i + sizeOfElement);
-		}
+		std::vector<int>::iterator	firstRangeBegin = secondRangeElementToCompare + 1 - step;
+		std::vector<int>::iterator	firstRangeEnd = firstRangeBegin + sizeOfElement;
+		std::vector<int>::iterator	secondRangeBegin = firstRangeEnd;
+		std::vector<int>::iterator	secondRangeEnd = secondRangeElementToCompare + 1;
+		// greater is already after smaller after swapMain
+		// so second range goes to main, first range goes to pend
+		newMain.insert(newMain.end(), secondRangeBegin, secondRangeEnd);
+		pend.insert(pend.end(), firstRangeBegin, firstRangeEnd);
 	}
-}
-
-// trim pending elements that lost against winners
-void
-trimSmallersFromMainChain
-(std::vector<int> &main, int sizeOfElement)
-{
-	// maxPair before end or before reminder elements
-	size_t maxPair = (main.size() / sizeOfElement);
-
-	std::vector<int>::iterator it = main.begin();
-	for (size_t i = 0; i < maxPair; i++)
-	{
-			it = main.erase(it, it + sizeOfElement);
-			it += sizeOfElement;
-	}
+	// append orphans in main
+	newMain.insert(newMain.end(), main.begin() + newMain.size() + pend.size(), main.end());
+	main.swap(newMain);
 }
 
 int	holdingToConsider(std::vector<int> holding, int nbToPlaceId, int sizeOfElement)
