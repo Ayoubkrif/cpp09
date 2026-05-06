@@ -13,7 +13,7 @@ void
 swapMain
 (std::vector<int> &main, std::vector<int>::size_type sizeOfElement)
 {
-	for (int i = sizeOfElement - 1; i + sizeOfElement < main->size(); i += sizeOfElement * 2)
+	for (int i = sizeOfElement - 1; i + sizeOfElement < main.size(); i += sizeOfElement * 2)
 	{
 		if (main[i] > main[i + sizeOfElement])
 		{
