@@ -76,23 +76,8 @@ extractPend
 	main.swap(newMain);
 }
 
-int	holdingToConsider(std::vector<int> holding, int nbToPlaceId, int sizeOfElement)
-{
-	int toAdd = 0;
-
-	for (std::vector<int>::iterator it = holding.begin(); it != holding.end(); ++it)
-	{
-		if (*it <= nbToPlaceId)
-		{
-			toAdd += 1;
-			nbToPlaceId += sizeOfElement;
-		}
-	}
-	return toAdd;
-}
-
 //binary insertion
-int	placeNumber(std::vector<int> *main, std::vector<int> pend, int nbToPlaceId, int borne, int sizeOfElement)
+int	placeNumber(std::vector<int> &main, std::vector<int> pend, int nbToPlaceId, int borne, int sizeOfElement)
 {
 	std::vector<int> toInsert;
 	int	toCompare = pend[nbToPlaceId];
@@ -120,42 +105,148 @@ int	placeNumber(std::vector<int> *main, std::vector<int> pend, int nbToPlaceId, 
 	return i;
 }
 
+
+
+
+
+
+
+
+
+
+/*
+ * Variables:
+ *		nbToPlaceId	(int)			: ?
+ *		holding		(vector int)	: valeurs des insertions precedente ?
+ *		sizeOfElement(int)			: valeur de decalage apres chaque comparaison reussie
+ *		toAdd		(int)			: valeur retournee, commence a zero
+ *
+ * Resume:
+ *		Pour chaque element dans holding:
+ *			Si holding est plus petit que nbToPlaceId
+ *				-decale nbToPlaceId de sizeOfElement
+ *				-incremente toAdd
+ * 
+ *		retourne toAdd
+ * */
+
+
+
+
+
+int	holdingToConsider(std::vector<int> holding, int nbToPlaceId, int sizeOfElement)
+{
+	int toAdd = 0;
+
+	for (std::vector<int>::iterator it = holding.begin(); it != holding.end(); ++it)
+	{
+		if (*it <= nbToPlaceId)
+		{
+			toAdd += 1;
+			nbToPlaceId += sizeOfElement;
+		}
+	}
+	return toAdd;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void
 insertPend
 (std::vector<int> &main, std::vector<int> pend, int sizeOfElement)
 {
-	int prevJacob = 0;
-	int decalage = 0;
 	std::vector<int> holding;
 	int prevId = 0;
-	int nbToPlaceId;
-	int pairId = 0;
 
+	// cree l'ordre dans lequel les pends vont etre inseres
 	std::vector<int> jacobList = createJacobList<std::vector<int> >(pend.size() / sizeOfElement);
 
+	// self explanatory
+	// sera utile pour savoir si on est passe d'un jacob a un autre dans la liste ou si on a decremente entre deux
+	int prevJacob = 0;
+
+	// valeur de decalage a l'initialisation de PairId
+	int decalage = 0;
+
+	// pour chaque pend dans la liste de jacob
 	for (std::vector<int>::iterator jacob = jacobList.begin(); jacob != jacobList.end(); ++jacob)
 	{
-		nbToPlaceId = *jacob * sizeOfElement - 1;
+		// le dernier nombre de son element
+		int nbToPlaceId = *jacob * sizeOfElement - 1;
+		// between 2 jacob
 		if (prevJacob > *jacob)
 		{
+			// ajoute la paire precedente a holding
 			holding.push_back(prevId);
-			pairId = nbToPlaceId + decalage;
+			// trouve la paire sans le decalge de holding
+			int pairId = nbToPlaceId + decalage;
+			// decale en fonction de holding
 			pairId += sizeOfElement * holdingToConsider(holding, pairId, sizeOfElement);
+	
+			// insere et edite prevId a l'insertionm actuelle
 			prevId = placeNumber(main, pend, nbToPlaceId, pairId, sizeOfElement);
 		}
+		// new jacob
 		else if (prevJacob < *jacob)
 		{
+			// decale de 1 sizeof element a chaque nouveau jacob sauf le premier
 			if (*jacob != 1)
 				decalage += sizeOfElement;
+			// decale de taille de holding * sizeofelement
+			// Pareil que de decaler de jacob actu - precedent jacob 
+			// mais vu que la liste a ete generee avec les gradients decremente,
+			// oblige de faire avec la taille de holding qui est egale au nombre d'iteration de l'autre if
+			// et donc on doit push back holding au debut du if
+			// (alors qu ele plus logique c'est apres linsertion pour arreter de trimballer prevId dans le code)
 			decalage += holding.size() * sizeOfElement;
 			holding.clear();
 
-			pairId = nbToPlaceId + decalage;
+			// trouve la paire
+			int pairId = nbToPlaceId + decalage;
+			// insere et edite prevId a l'insertionm actuelle
 			prevId = placeNumber(main, pend, nbToPlaceId, pairId, sizeOfElement);
 		}
 		prevJacob = *jacob;
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void
 recursiveSort
@@ -163,10 +254,10 @@ recursiveSort
 {
 	std::vector<int> pend;
 
-	swapMain(main, sizeOfElement);
+	sort2By2(main, sizeOfElement);
 	if (main.size() / (sizeOfElement) >= 2)
 		recursiveSort(main, sizeOfElement * 2);
-	pend = createPend(main, sizeOfElement);
+	extractPend(main, pend, sizeOfElement);
 	insertPend(main, pend, sizeOfElement);
 }
 
