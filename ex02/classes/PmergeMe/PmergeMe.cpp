@@ -77,20 +77,17 @@ extractPend
 }
 
 //binary insertion
-int	placeNumber(std::vector<int> &main, std::vector<int> pend, Iterator pendToInsertId, Iterator borne, int sizeOfElement)
+int	placeNumber(std::vector<int> &main, std::vector<int> pend, int nbToPlaceId, int borne, int sizeOfElement)
 {
-	// for (int j = pendToInsertId - sizeOfElement + 1; j <= pendToInsertId; j++)
-	// 	blockToInsert.push_back(pend[j]);
-	// 	replace by this :
-	Iterator blockToInsertStart = pendToInsertId - (sizeOfElement - 1);
-	Iterator blockToInsertEnd = pendToInsertId + 1;
-	// puis on l'insere directement a la fin de pendToInsertStart a end
-	int	toCompare = pend[pendToInsertId];
+	std::vector<int> toInsert;
+	int	toCompare = pend[nbToPlaceId];
 
-	Iterator i;
+	for (int j = nbToPlaceId - sizeOfElement + 1; j <= nbToPlaceId; j++)
+		toInsert.push_back(pend[j]);
+	int i = 0;
 	if (borne == sizeOfElement - 1)
 	{
-		insert(main, blockToInsert, i);
+		insert(main, toInsert, i);
 		return i;
 	}
 
