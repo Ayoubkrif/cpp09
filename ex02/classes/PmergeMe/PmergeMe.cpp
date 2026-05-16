@@ -77,17 +77,20 @@ extractPend
 }
 
 //binary insertion
-int	placeNumber(std::vector<int> &main, std::vector<int> pend, int nbToPlaceId, int borne, int sizeOfElement)
+int	placeNumber(std::vector<int> &main, std::vector<int> pend, Iterator pendToInsertId, Iterator borne, int sizeOfElement)
 {
-	std::vector<int> toInsert;
-	int	toCompare = pend[nbToPlaceId];
+	// for (int j = pendToInsertId - sizeOfElement + 1; j <= pendToInsertId; j++)
+	// 	blockToInsert.push_back(pend[j]);
+	// 	replace by this :
+	Iterator blockToInsertStart = pendToInsertId - (sizeOfElement - 1);
+	Iterator blockToInsertEnd = pendToInsertId + 1;
+	// puis on l'insere directement a la fin de pendToInsertStart a end
+	int	toCompare = pend[pendToInsertId];
 
-	for (int j = nbToPlaceId - sizeOfElement + 1; j <= nbToPlaceId; j++)
-		toInsert.push_back(pend[j]);
-	int i = 0;
+	Iterator i;
 	if (borne == sizeOfElement - 1)
 	{
-		insert(main, toInsert, i);
+		insert(main, blockToInsert, i);
 		return i;
 	}
 
@@ -181,56 +184,56 @@ void
 insertPend
 (std::vector<int> &main, std::vector<int> pend, int sizeOfElement)
 {
-	std::vector<int> prevInsertion;
+	std::vector<int> insertedSinceLastJacobsthal;
 	int lastInsertedMain = 0;
 
 	// cree l'ordre dans lequel les pends vont etre inseres
-	std::vector<int> jacobList = createJacobList<std::vector<int> >(pend.size() / sizeOfElement);
+	std::vector<int> insertionOrder = createinsertionOrder<std::vector<int> >(pend.size() / sizeOfElement);
 
 	// self explanatory
 	// sera utile pour savoir si on est passe d'un jacob a un autre dans la liste ou si on a decremente entre deux
 	int prevJacob = 0;
 
 	// valeur de decalage a l'initialisation de PairId
-	int decalage = 0;
+	int mainShift = 0;
 
 	// pour chaque pend dans la liste de jacob
-	for (std::vector<int>::iterator jacob = jacobList.begin(); jacob != jacobList.end(); ++jacob)
+	for (std::vector<int>::iterator jacob = insertionOrder.begin(); jacob != insertionOrder.end(); ++jacob)
 	{
 		// le dernier nombre de son element
-		int nbToPlaceId = *jacob * sizeOfElement - 1;
+		int pendToInsertId = *jacob * sizeOfElement - 1;
 		// between 2 jacob
 		if (prevJacob > *jacob)
 		{
 			// ajoute la paire precedente a holding
-			prevInsertion.push_back(lastInsertedMain);
+			insertedSinceLastJacobsthal.push_back(lastInsertedMain);
 			// trouve la paire sans le decalge de holding
-			int pairId = nbToPlaceId + decalage;
+			int mainBoundInsertion = pendToInsertId + mainShift;
 			// decale en fonction de holding
-			considerPreviousInsertion(prevInsertion, pairId, sizeOfElement);
+			considerPreviousInsertion(insertedSinceLastJacobsthal, mainBoundInsertion, sizeOfElement);
 	
 			// insere et edite lastInsertedMain a l'insertionm actuelle
-			lastInsertedMain = placeNumber(main, pend, nbToPlaceId, pairId, sizeOfElement);
+			lastInsertedMain = placeNumber(main, pend, pendToInsertId, mainBoundInsertion, sizeOfElement);
 		}
 		// new jacob
 		else if (prevJacob < *jacob)
 		{
 			// decale de 1 sizeof element a chaque nouveau jacob sauf le premier
 			if (*jacob != 1)
-				decalage += sizeOfElement;
+				mainShift += sizeOfElement;
 			// decale de taille de holding * sizeofelement
 			// Pareil que de decaler de jacob actu - precedent jacob 
 			// mais vu que la liste a ete generee avec les gradients decremente,
 			// oblige de faire avec la taille de holding qui est egale au nombre d'iteration de l'autre if
 			// et donc on doit push back holding au debut du if
 			// (alors qu ele plus logique c'est apres linsertion pour arreter de trimballer lastInsertedMain dans le code)
-			decalage += prevInsertion.size() * sizeOfElement;
-			prevInsertion.clear();
+			mainShift += insertedSinceLastJacobsthal.size() * sizeOfElement;
+			insertedSinceLastJacobsthal.clear();
 
 			// trouve la paire
-			int pairId = nbToPlaceId + decalage;
+			int mainBoundInsertion = pendToInsertId + mainShift;
 			// insere et edite lastInsertedMain a l'insertion actuelle
-			lastInsertedMain = placeNumber(main, pend, nbToPlaceId, pairId, sizeOfElement);
+			lastInsertedMain = placeNumber(main, pend, pendToInsertId, mainBoundInsertion, sizeOfElement);
 		}
 		prevJacob = *jacob;
 	}
