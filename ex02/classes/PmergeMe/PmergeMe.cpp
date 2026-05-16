@@ -116,10 +116,10 @@ int	placeNumber(std::vector<int> &main, std::vector<int> pend, int nbToPlaceId, 
 
 /*
  * Variables:
- *		nbToPlaceId	(int)			: ?
- *		holding		(vector int)	: valeurs des insertions precedente ?
- *		sizeOfElement(int)			: valeur de decalage apres chaque comparaison reussie
- *		toAdd		(int)			: valeur retournee, commence a zero
+ *		nbToPlaceId	(int)			: emplacement de la borne superieure qui a ete decalee, ce sera determine par cette fonction
+ *		holding		(vector int)	: emplacement des insertions precedente ?
+ *		sizeOfElement(int)			: taille d'un element donc ici valeur de decalage apres chaque comparaison reussie
+ *		toAdd		(int)			: nombre d'element de decalage pour chaque element insere avant
  *
  * Resume:
  *		Pour chaque element dans holding:
@@ -128,25 +128,26 @@ int	placeNumber(std::vector<int> &main, std::vector<int> pend, int nbToPlaceId, 
  *				-incremente toAdd
  * 
  *		retourne toAdd
+ *
+ *	Explication:
+ *		Chaque fois que une precendente insertion (holding) est avant notre prochaine insertion:
+ *			decaler (augmanter de sizeofelement l'index) nbToPlaceId
+ *
  * */
 
 
 
 
 
-int	holdingToConsider(std::vector<int> holding, int nbToPlaceId, int sizeOfElement)
+void	considerPreviousInsertion(std::vector<int> prevInsertion, int &nbToPlaceId, int sizeOfElement)
 {
-	int toAdd = 0;
-
-	for (std::vector<int>::iterator it = holding.begin(); it != holding.end(); ++it)
+	for (std::vector<int>::iterator it = prevInsertion.begin(); it != prevInsertion.end(); ++it)
 	{
 		if (*it <= nbToPlaceId)
 		{
-			toAdd += 1;
 			nbToPlaceId += sizeOfElement;
 		}
 	}
-	return toAdd;
 }
 
 
@@ -178,7 +179,7 @@ void
 insertPend
 (std::vector<int> &main, std::vector<int> pend, int sizeOfElement)
 {
-	std::vector<int> holding;
+	std::vector<int> prevInsertion;
 	int prevId = 0;
 
 	// cree l'ordre dans lequel les pends vont etre inseres
@@ -200,11 +201,11 @@ insertPend
 		if (prevJacob > *jacob)
 		{
 			// ajoute la paire precedente a holding
-			holding.push_back(prevId);
+			prevInsertion.push_back(prevId);
 			// trouve la paire sans le decalge de holding
 			int pairId = nbToPlaceId + decalage;
 			// decale en fonction de holding
-			pairId += sizeOfElement * holdingToConsider(holding, pairId, sizeOfElement);
+			considerPreviousInsertion(prevInsertion, pairId, sizeOfElement);
 	
 			// insere et edite prevId a l'insertionm actuelle
 			prevId = placeNumber(main, pend, nbToPlaceId, pairId, sizeOfElement);
@@ -221,8 +222,8 @@ insertPend
 			// oblige de faire avec la taille de holding qui est egale au nombre d'iteration de l'autre if
 			// et donc on doit push back holding au debut du if
 			// (alors qu ele plus logique c'est apres linsertion pour arreter de trimballer prevId dans le code)
-			decalage += holding.size() * sizeOfElement;
-			holding.clear();
+			decalage += prevInsertion.size() * sizeOfElement;
+			prevInsertion.clear();
 
 			// trouve la paire
 			int pairId = nbToPlaceId + decalage;
