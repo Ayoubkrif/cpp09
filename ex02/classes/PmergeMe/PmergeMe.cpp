@@ -90,23 +90,25 @@ int	placeNumber(std::vector<int> &main, std::vector<int> pend, int nbToPlaceId, 
 		insert(main, toInsert, i);
 		return i;
 	}
-	int temp, downBorne = 0, upBorne = (borne + 1) / sizeOfElement;
-	while(upBorne - downBorne != 1 && upBorne != downBorne)
-	{
-		temp = downBorne + ((upBorne - downBorne) / 2);
-		VectComp++;
-		if (toCompare < (*main)[(temp * sizeOfElement) - 1])
-			upBorne = temp;
-		else
-			downBorne = temp;
-	}
-	i += downBorne * sizeOfElement;
+
+	// // me
+	// StrideLowerBound(, Iterator last, , std::size_t step)
+
+	// // Clarinette
+	// int temp, downBorne = 0, upBorne = (borne + 1) / sizeOfElement;
+	// while(upBorne - downBorne != 1 && upBorne != downBorne)
+	// {
+	// 	temp = downBorne + ((upBorne - downBorne) / 2);
+	// 	if (toCompare < main[(temp * sizeOfElement) - 1])
+	// 		upBorne = temp;
+	// 	else
+	// 		downBorne = temp;
+	// }
+	// i += downBorne * sizeOfElement;
+
 	insert(main, toInsert, i);
 	return i;
 }
-
-
-
 
 
 
@@ -139,9 +141,9 @@ int	placeNumber(std::vector<int> &main, std::vector<int> pend, int nbToPlaceId, 
 
 
 
-void	considerPreviousInsertion(std::vector<int> prevInsertion, int &nbToPlaceId, int sizeOfElement)
+void	considerPreviousInsertion(std::vector<int> const &prevInsertion, int &nbToPlaceId, int sizeOfElement)
 {
-	for (std::vector<int>::iterator it = prevInsertion.begin(); it != prevInsertion.end(); ++it)
+	for (std::vector<int>::const_iterator it = prevInsertion.begin(); it != prevInsertion.end(); ++it)
 	{
 		if (*it <= nbToPlaceId)
 		{
@@ -180,7 +182,7 @@ insertPend
 (std::vector<int> &main, std::vector<int> pend, int sizeOfElement)
 {
 	std::vector<int> prevInsertion;
-	int prevId = 0;
+	int lastInsertedMain = 0;
 
 	// cree l'ordre dans lequel les pends vont etre inseres
 	std::vector<int> jacobList = createJacobList<std::vector<int> >(pend.size() / sizeOfElement);
@@ -201,14 +203,14 @@ insertPend
 		if (prevJacob > *jacob)
 		{
 			// ajoute la paire precedente a holding
-			prevInsertion.push_back(prevId);
+			prevInsertion.push_back(lastInsertedMain);
 			// trouve la paire sans le decalge de holding
 			int pairId = nbToPlaceId + decalage;
 			// decale en fonction de holding
 			considerPreviousInsertion(prevInsertion, pairId, sizeOfElement);
 	
-			// insere et edite prevId a l'insertionm actuelle
-			prevId = placeNumber(main, pend, nbToPlaceId, pairId, sizeOfElement);
+			// insere et edite lastInsertedMain a l'insertionm actuelle
+			lastInsertedMain = placeNumber(main, pend, nbToPlaceId, pairId, sizeOfElement);
 		}
 		// new jacob
 		else if (prevJacob < *jacob)
@@ -221,14 +223,14 @@ insertPend
 			// mais vu que la liste a ete generee avec les gradients decremente,
 			// oblige de faire avec la taille de holding qui est egale au nombre d'iteration de l'autre if
 			// et donc on doit push back holding au debut du if
-			// (alors qu ele plus logique c'est apres linsertion pour arreter de trimballer prevId dans le code)
+			// (alors qu ele plus logique c'est apres linsertion pour arreter de trimballer lastInsertedMain dans le code)
 			decalage += prevInsertion.size() * sizeOfElement;
 			prevInsertion.clear();
 
 			// trouve la paire
 			int pairId = nbToPlaceId + decalage;
-			// insere et edite prevId a l'insertionm actuelle
-			prevId = placeNumber(main, pend, nbToPlaceId, pairId, sizeOfElement);
+			// insere et edite lastInsertedMain a l'insertion actuelle
+			lastInsertedMain = placeNumber(main, pend, nbToPlaceId, pairId, sizeOfElement);
 		}
 		prevJacob = *jacob;
 	}

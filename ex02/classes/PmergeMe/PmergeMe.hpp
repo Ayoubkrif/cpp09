@@ -82,3 +82,29 @@ void	fillContainer(C1& container1, C2& container2, char** numbers, int n)
 		container2.push_back(static_cast<unsigned int>(number));
 	}
 }
+
+template <typename Iterator, typename T>
+Iterator StrideLowerBound(Iterator first, Iterator last,
+                            const T& value, std::size_t step)
+{
+    typedef typename std::iterator_traits<Iterator>::difference_type diff_t;
+    diff_t total = std::distance(first, last);
+    diff_t count = total / step;
+    diff_t lo = 0, hi = count;
+
+    while (lo < hi) {
+        diff_t mid = lo + (hi - lo) / 2;
+        Iterator Candidate = first;
+        std::advance(Candidate, mid * step + (step - 1));  // offset n-1
+        if (*Candidate < value) lo = mid + 1;
+        else hi = mid;
+    }
+
+    Iterator result = first;
+    if (lo < count) {
+        std::advance(result, lo * step + (step - 1));
+    } else {
+        result = last;  // tous les représentants étaient < value
+    }
+    return result;
+}
