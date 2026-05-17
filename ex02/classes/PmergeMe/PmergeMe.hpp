@@ -15,45 +15,6 @@ class PmergeMe
 		~PmergeMe(void);
 };
 
-template
-<typename T>
-void	iter(T *array, unsigned int size, void f(T const &))
-{
-	for (unsigned int i = 0; i < size; ++i)
-	{
-		f(array[i]);
-	}
-}
-
-template
-<typename T>
-void	iter(T *array, unsigned int size, void f(T &))
-{
-	for (unsigned int i = 0; i < size; ++i)
-	{
-		f(array[i]);
-	}
-}
-
-template
-<typename Container, typename Func>
-void	iter(Container& container, Func f)
-{
-	for (typename Container::const_iterator it = container.begin(); it != container.end(); ++it)
-	{
-		f(*it);
-	}
-}
-
-#include <iostream>
-
-template
-<typename T>
-void	print(T const &t)
-{
-	std::cout << t << " ";
-}
-
 #include <limits>
 #include <stdexcept>
 #include <cerrno>
@@ -82,6 +43,48 @@ fillContainer
 		container1.push_back(static_cast<unsigned int>(number));
 		container2.push_back(static_cast<unsigned int>(number));
 	}
+}
+
+//Helper
+#include <iostream>
+template <typename Container>
+struct ContainerPrinter
+{
+    const Container& container;
+    int sizeOfElement;
+
+    ContainerPrinter(const Container& c, int s)
+        : container(c), sizeOfElement(s) {}
+};
+
+template <typename Container>
+ContainerPrinter<Container>
+printContainer
+(const Container& c, int s)
+{
+    return ContainerPrinter<Container>(c, s);
+}
+
+template <typename Container>
+std::ostream&
+operator<<
+(std::ostream& os, const ContainerPrinter<Container>& p)
+{
+    int count = 0;
+    for (typename Container::const_iterator it = p.container.begin();
+         it != p.container.end(); ++it)
+    {
+        if (count != 0)
+        {
+            if (count % p.sizeOfElement == 0)
+                os << "|";
+            else
+                os << " ";
+        }
+        os << *it;
+        ++count;
+    }
+    return os;
 }
 
 template <typename Iterator, typename T>

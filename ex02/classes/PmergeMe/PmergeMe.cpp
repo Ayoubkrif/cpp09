@@ -152,6 +152,7 @@ insertPend
 	}
 }
 
+#include <iomanip>
 void
 recursiveSort
 (std::vector<int> &main, int sizeOfElement)
@@ -159,23 +160,26 @@ recursiveSort
 	std::vector<int> pend;
 
 	sort2By2(main, sizeOfElement);
+	std::cout << std::left << std::setw(16) << "afterswap" << ": " << printContainer(main, sizeOfElement) << std::endl;
 	if (main.size() / (sizeOfElement) >= 2)
 		recursiveSort(main, sizeOfElement * 2);
 	extractPend(main, pend, sizeOfElement);
+	std::cout << std::left << std::setw(16) << "MAIN CHAIN" << ": " << printContainer(main, sizeOfElement) << std::endl;
+	std::cout << std::left << std::setw(16) << "PENDING ELEMENTS" << ": " << printContainer(pend, sizeOfElement) << std::endl;
 	insertPend(main, pend, sizeOfElement);
+	std::cout << std::left << std::setw(16) << "ENDED WITH" << ": " << printContainer(main, sizeOfElement) << std::endl;
+	std::cout << std::left << std::setw(16) << "SHOULD BE EMPTY" << ": " << printContainer(pend, sizeOfElement) << std::endl;
 }
 
 void	PmergeMe::sort(char **numbers, int n)
 {
-	std::vector<int>	v;
+	std::vector<int>			v;
 	std::deque<unsigned int>	d;
 
 	fillContainer(v, d, numbers, n);
-	iter(v, print<unsigned int>);
-	std::cout << std::endl;
+	std::cout << std::left << std::setw(16) << "before"<< ": "  << printContainer(v, 1) << std::endl;
 	recursiveSort(v, 1);
-	iter(v, print<unsigned int>);
-	std::cout << std::endl;
+	std::cout << std::left << std::setw(16) << "after"<< ": " << printContainer(v, 1) << std::endl;
 }
 
 PmergeMe
