@@ -59,9 +59,10 @@ void	print(T const &t)
 #include <cerrno>
 #include <cstdlib>
 
-template
-<typename C1, typename C2>
-void	fillContainer(C1& container1, C2& container2, char** numbers, int n)
+template <typename C1, typename C2>
+void
+fillContainer
+(C1& container1, C2& container2, char** numbers, int n)
 {
 	for (int i = 0; i < n; i++)
 	{
@@ -84,8 +85,9 @@ void	fillContainer(C1& container1, C2& container2, char** numbers, int n)
 }
 
 template <typename Iterator, typename T>
-Iterator StrideLowerBound(Iterator first, Iterator last,
-                            const T& value, std::size_t step)
+Iterator
+StrideLowerBound
+(Iterator first, Iterator last, const T& value, std::size_t step)
 {
     typedef typename std::iterator_traits<Iterator>::difference_type diff_t;
     diff_t total = std::distance(first, last);
@@ -101,10 +103,44 @@ Iterator StrideLowerBound(Iterator first, Iterator last,
     }
 
     Iterator result = first;
-    if (lo < count) {
-        std::advance(result, lo * step + (step - 1));
-    } else {
-        result = last;  // tous les représentants étaient < value
-    }
+    if (lo < count) std::advance(result, lo * step); // si entre 0 et count alors retourner le debut du block
+    else result = last;  // sinon tous les représentants étaient < value
+
     return result;
+}
+
+template <typename Container>
+Container
+createinsertionOrder
+(typename Container::size_type length)
+{
+	int current = 3;
+	int prev = 1;
+	int next;
+	Container jacobList;
+
+	if (length == 0)
+	   return jacobList;
+	// initial term
+	jacobList.push_back(1);
+
+	// when jacoblist is full
+	while (jacobList.size() != length)
+	{
+		// if list is between 2 jacob number, bound at lenght
+		if (current > static_cast<int>(length))
+			current = length;
+
+		// fill terms between 2 jacob with unused numbers
+		for (int i = current; i != prev; i--)
+			jacobList.push_back(i);
+
+		// find next term
+		next = current + 2 * prev;
+
+		// update prev and current
+		prev = current;
+		current = next;
+	}
+	return jacobList;
 }

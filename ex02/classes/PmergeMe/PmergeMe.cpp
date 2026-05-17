@@ -77,36 +77,17 @@ extractPend
 }
 
 //binary insertion
-int	placeNumber(std::vector<int> &main, std::vector<int> pend, int nbToPlaceId, int borne, int sizeOfElement)
+// BORNE EXCLUSIF ?? (+1)
+int	placeNumber(std::vector<int> &main, std::vector<int> &pend, int nbToPlaceId, int borne, int sizeOfElement)
 {
-	std::vector<int> toInsert;
+	std::vector<int>::iterator toInsertBegin = pend.begin() + nbToPlaceId - sizeOfElement + 1;
+	std::vector<int>::iterator toInsertEnd = pend.begin() + nbToPlaceId + 1;
+
 	int	toCompare = pend[nbToPlaceId];
-
-	for (int j = nbToPlaceId - sizeOfElement + 1; j <= nbToPlaceId; j++)
-		toInsert.push_back(pend[j]);
-	int i = 0;
-	if (borne == sizeOfElement - 1)
-	{
-		insert(main, toInsert, i);
-		return i;
-	}
-
-	// // me
-	// StrideLowerBound(, Iterator last, , std::size_t step)
-
-	// // Clarinette
-	// int temp, downBorne = 0, upBorne = (borne + 1) / sizeOfElement;
-	// while(upBorne - downBorne != 1 && upBorne != downBorne)
-	// {
-	// 	temp = downBorne + ((upBorne - downBorne) / 2);
-	// 	if (toCompare < main[(temp * sizeOfElement) - 1])
-	// 		upBorne = temp;
-	// 	else
-	// 		downBorne = temp;
-	// }
-	// i += downBorne * sizeOfElement;
-
-	insert(main, toInsert, i);
+	// me
+	// cherche la borne inferieure du debut a la borne EXCLUE ?
+	std::vector<int>::iterator place = StrideLowerBound(main.begin(), main.begin() + borne, toCompare, sizeOfElement);
+	std::vector<int>::difference_type i = main.insert(place, toInsertBegin, toInsertEnd) - main.begin();
 	return i;
 }
 
