@@ -87,76 +87,11 @@ int	placeNumber(std::vector<int> &main, std::vector<int> &pend, int nbToPlaceId,
 	// me
 	// cherche la borne inferieure du debut a la borne EXCLUE ?
 	std::vector<int>::iterator place = StrideLowerBound(main.begin(), main.begin() + borne, toCompare, sizeOfElement);
-	std::vector<int>::difference_type i = main.insert(place, toInsertBegin, toInsertEnd) - main.begin();
+	main.insert(place, toInsertBegin, toInsertEnd);
+
+	std::vector<int>::difference_type i = place - main.begin();
 	return i;
 }
-
-
-
-
-
-
-
-/*
- * Variables:
- *		nbToPlaceId	(int)			: emplacement de la borne superieure qui a ete decalee, ce sera determine par cette fonction
- *		holding		(vector int)	: emplacement des insertions precedente ?
- *		sizeOfElement(int)			: taille d'un element donc ici valeur de decalage apres chaque comparaison reussie
- *		toAdd		(int)			: nombre d'element de decalage pour chaque element insere avant
- *
- * Resume:
- *		Pour chaque element dans holding:
- *			Si holding est plus petit que nbToPlaceId
- *				-decale nbToPlaceId de sizeOfElement
- *				-incremente toAdd
- * 
- *		retourne toAdd
- *
- *	Explication:
- *		Chaque fois que une precendente insertion (holding) est avant notre prochaine insertion:
- *			decaler (augmanter de sizeofelement l'index) nbToPlaceId
- *
- * */
-
-
-
-
-
-void	considerPreviousInsertion(std::vector<int> const &prevInsertion, int &nbToPlaceId, int sizeOfElement)
-{
-	for (std::vector<int>::const_iterator it = prevInsertion.begin(); it != prevInsertion.end(); ++it)
-	{
-		if (*it <= nbToPlaceId)
-		{
-			nbToPlaceId += sizeOfElement;
-		}
-	}
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void
 insertPend
@@ -216,21 +151,6 @@ insertPend
 		prevJacob = *jacob;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void
 recursiveSort

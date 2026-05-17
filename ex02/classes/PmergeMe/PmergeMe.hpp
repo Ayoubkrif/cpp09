@@ -144,3 +144,35 @@ createinsertionOrder
 	}
 	return jacobList;
 }
+
+/*
+ * Variables:
+ *		nbToPlaceId	(int)			: emplacement de la borne superieure qui a ete decalee, ce sera determine par cette fonction
+ *		holding		(vector int)	: emplacement des insertions precedente ?
+ *		sizeOfElement(int)			: taille d'un element donc ici valeur de decalage apres chaque comparaison reussie
+ *		toAdd		(int)			: nombre d'element de decalage pour chaque element insere avant
+ *
+ * Resume:
+ *		Pour chaque element dans holding:
+ *			Si holding est plus petit que nbToPlaceId
+ *				-decale nbToPlaceId de sizeOfElement
+ *				-incremente toAdd
+ * 
+ *		retourne toAdd
+ *
+ *	Explication:
+ *		Chaque fois que une precendente insertion (holding) est avant notre prochaine insertion:
+ *			decaler (augmanter de sizeofelement l'index) nbToPlaceId
+ *
+ * */
+template <typename Container, typename Type>
+void considerPreviousInsertion
+(const Container& prevInsertion, Type& nbToPlaceId, int sizeOfElement)
+{
+    for (typename Container::const_iterator it = prevInsertion.begin();
+         it != prevInsertion.end(); ++it)
+    {
+        if (*it <= nbToPlaceId)
+            nbToPlaceId += sizeOfElement;
+    }
+}
