@@ -115,7 +115,7 @@ int	placeNumber(std::vector<int> &main, std::vector<int> &pend, int nbToPlaceId,
 	int	toCompare = pend[nbToPlaceId];
 	// me
 	// cherche la borne inferieure du debut a la borne EXCLUE ?
-	std::vector<int>::iterator place = StrideLowerBound(main.begin(), main.begin() + borne, toCompare, sizeOfElement);
+	std::vector<int>::iterator place = StrideLowerBound(main.begin(), main.begin() + borne + 1, toCompare, sizeOfElement);
 	main.insert(place, toInsertBegin, toInsertEnd);
 
 	std::vector<int>::difference_type i = place - main.begin();
@@ -132,6 +132,7 @@ insertPend
 	// cree l'ordre dans lequel les pends vont etre inseres
 	std::vector<int> insertionOrder = createinsertionOrder<std::vector<int> >(pend.size() / sizeOfElement);
 
+	std::cout << "size of jacob:" << insertionOrder.size() << std::endl;
 	// self explanatory
 	// sera utile pour savoir si on est passe d'un jacob a un autre dans la liste ou si on a decremente entre deux
 	int prevJacob = 0;
@@ -175,6 +176,7 @@ insertPend
 			// trouve la paire
 			int mainBoundInsertion = pendToInsertId + mainShift;
 			// insere et edite lastInsertedMain a l'insertion actuelle
+			std::cout << "mainBoundInsertion = " << mainBoundInsertion << std::endl;
 			lastInsertedMain = placeNumber(main, pend, pendToInsertId, mainBoundInsertion, sizeOfElement);
 		}
 		prevJacob = *jacob;
