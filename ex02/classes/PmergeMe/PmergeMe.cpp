@@ -192,12 +192,14 @@ recursiveSort
 	std::cout << std::left << std::setw(16) << "Before" << ": " << printContainer(main, sizeOfElement) << std::endl;
 	sort2By2(main, sizeOfElement);
 	std::cout << std::left << std::setw(16) << "After" << ": " << printContainer(main, sizeOfElement) << std::endl;
-	if (main.size() / (sizeOfElement) >= 2)
+	if (main.size() / (sizeOfElement) >= 4)
 		recursiveSort(main, sizeOfElement * 2);
+	std::cout << std::left << std::setw(16) << "Unsorted blocks" << ": " << printContainer(main, sizeOfElement) << std::endl;
 	extractPend(main, pend, sizeOfElement);
 	std::cout << std::left << std::setw(16) << "Main chain" << ": " << printContainer(main, sizeOfElement) << std::endl;
-	std::cout << std::left << std::setw(16) << "Pending Elements" << ": " << printContainer(main, sizeOfElement) << std::endl;
+	std::cout << std::left << std::setw(16) << "Pending Elements" << ": " << printContainer(pend, sizeOfElement) << std::endl;
 	insertPend(main, pend, sizeOfElement);
+	std::cout << std::left << std::setw(16) << "Sorted blocks" << ": " << printContainer(main, sizeOfElement) << std::endl;
 }
 
 void	PmergeMe::sort(char **numbers, int n)
