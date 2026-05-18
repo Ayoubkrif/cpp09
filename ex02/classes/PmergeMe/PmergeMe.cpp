@@ -4,11 +4,40 @@
 /*   Created: 2026/02/22 11:44:41 by aykrifa           #+#    #+#             */
 /* ************************************************************************** */
 
-#include <algorithm>
+#include "PmergeMe.hpp"
+PmergeMe
+::PmergeMe
+(void)
+{
+	throw (std::runtime_error("Should not be called !"));
+}
+
+PmergeMe
+::PmergeMe
+(const PmergeMe &copy)
+{
+	(void)copy;
+	throw (std::runtime_error("Should not be called !"));
+}
+
+PmergeMe	&PmergeMe
+::operator=
+(const PmergeMe &rhs)
+{
+	(void)rhs;
+	throw (std::runtime_error("Should not be called !"));
+	return (*this);
+}
+
+PmergeMe
+::~PmergeMe
+(void){}
+
 #include <deque>
+#include <set>
+#include <stdexcept>
 #include <utility>
 #include <vector>
-#include "PmergeMe.hpp"
 
 // Put greaters elements of the main chain after smallers
 // duplicate smallers in a chain named pend
@@ -159,16 +188,16 @@ recursiveSort
 {
 	std::vector<int> pend;
 
+	std::cout << std::left << std::setw(16) << "SWAP" << std::endl;
+	std::cout << std::left << std::setw(16) << "Before" << ": " << printContainer(main, sizeOfElement) << std::endl;
 	sort2By2(main, sizeOfElement);
-	std::cout << std::left << std::setw(16) << "afterswap" << ": " << printContainer(main, sizeOfElement) << std::endl;
+	std::cout << std::left << std::setw(16) << "After" << ": " << printContainer(main, sizeOfElement) << std::endl;
 	if (main.size() / (sizeOfElement) >= 2)
 		recursiveSort(main, sizeOfElement * 2);
 	extractPend(main, pend, sizeOfElement);
-	std::cout << std::left << std::setw(16) << "MAIN CHAIN" << ": " << printContainer(main, sizeOfElement) << std::endl;
-	std::cout << std::left << std::setw(16) << "PENDING ELEMENTS" << ": " << printContainer(pend, sizeOfElement) << std::endl;
+	std::cout << std::left << std::setw(16) << "Main chain" << ": " << printContainer(main, sizeOfElement) << std::endl;
+	std::cout << std::left << std::setw(16) << "Pending Elements" << ": " << printContainer(main, sizeOfElement) << std::endl;
 	insertPend(main, pend, sizeOfElement);
-	std::cout << std::left << std::setw(16) << "ENDED WITH" << ": " << printContainer(main, sizeOfElement) << std::endl;
-	std::cout << std::left << std::setw(16) << "SHOULD BE EMPTY" << ": " << printContainer(pend, sizeOfElement) << std::endl;
 }
 
 void	PmergeMe::sort(char **numbers, int n)
@@ -177,35 +206,11 @@ void	PmergeMe::sort(char **numbers, int n)
 	std::deque<unsigned int>	d;
 
 	fillContainer(v, d, numbers, n);
-	std::cout << std::left << std::setw(16) << "before"<< ": "  << printContainer(v, 1) << std::endl;
+	std::multiset<unsigned int>	ref(v.begin(), v.end());
+	std::cout << std::left << std::setw(16) << "list"<< ": "  << printContainer(v, 0) << std::endl;
 	recursiveSort(v, 1);
-	std::cout << std::left << std::setw(16) << "after"<< ": " << printContainer(v, 1) << std::endl;
+	if (!isSorted(v) || !sameElements(ref, v))
+		throw (std::runtime_error("OOPS"));
+	std::cout << std::left << std::setw(16) << "sorted list"<< ": " << printContainer(v, 1) << std::endl;
 }
 
-PmergeMe
-::PmergeMe
-(void)
-{
-	throw (std::runtime_error("Should not be called !"));
-}
-
-PmergeMe
-::PmergeMe
-(const PmergeMe &copy)
-{
-	(void)copy;
-	throw (std::runtime_error("Should not be called !"));
-}
-
-PmergeMe	&PmergeMe
-::operator=
-(const PmergeMe &rhs)
-{
-	(void)rhs;
-	throw (std::runtime_error("Should not be called !"));
-	return (*this);
-}
-
-PmergeMe
-::~PmergeMe
-(void){}
