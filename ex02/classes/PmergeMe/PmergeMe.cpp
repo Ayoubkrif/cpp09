@@ -5,6 +5,7 @@
 /* ************************************************************************** */
 
 #include "PmergeMe.hpp"
+#include "utils.hpp"
 PmergeMe
 ::PmergeMe
 (void)
@@ -39,6 +40,16 @@ PmergeMe
 #include <utility>
 #include <vector>
 
+int g_comparisons = 0;
+
+static bool
+countComp
+(int a, int b)
+{
+	g_comparisons++;
+	return a < b;
+}
+
 // Put greaters elements of the main chain after smallers
 // duplicate smallers in a chain named pend
 void
@@ -60,7 +71,7 @@ sort2By2
 		std::vector<int>::iterator	secondRangeBegin = firstRangeEnd;
 		std::vector<int>::iterator	secondRangeEnd = secondRangeElementToCompare + 1;
 		// Compare last number of each elements
-		if (*firstRangeElementToCompare > *secondRangeElementToCompare)
+		if (countComp(*secondRangeElementToCompare, *firstRangeElementToCompare))
 		{
 			// Put greaters elements after smallers
 			newMain.insert(newMain.end(), secondRangeBegin, secondRangeEnd);
@@ -116,8 +127,11 @@ placeNumber
 
 	int	toCompare = pend[nbToPlaceId];
 	// me
-	// cherche la borne inferieure du debut a la borne EXCLUE ?
-	std::vector<int>::iterator place = StrideLowerBound(main.begin(), main.begin() + borne + 1, toCompare, sizeOfElement);
+	// orphan has no winner pair: borne may exceed main.size(), clamp to end
+	std::vector<int>::iterator searchEnd = main.begin() + borne + 1;
+	if (searchEnd > main.end())
+		searchEnd = main.end();
+	std::vector<int>::iterator place = StrideLowerBound(main.begin(), searchEnd, toCompare, sizeOfElement, countComp);
 	main.insert(place, toInsertBegin, toInsertEnd);
 
 	std::vector<int>::difference_type i = place - main.begin();
@@ -191,12 +205,13 @@ recursiveSort
 (std::vector<int> &main, int sizeOfElement)
 {
 	std::vector<int> pend;
+	int	numberOfElement = main.size() / (sizeOfElement);
 
 	std::cout << std::left << std::setw(16) << "SWAP" << std::endl;
 	std::cout << std::left << std::setw(16) << "Before" << ": " << printContainer(main, sizeOfElement) << std::endl;
 	sort2By2(main, sizeOfElement);
 	std::cout << std::left << std::setw(16) << "After" << ": " << printContainer(main, sizeOfElement) << std::endl;
-	if (main.size() / (sizeOfElement) >= 4)
+	if (numberOfElement >= 4)
 		recursiveSort(main, sizeOfElement * 2);
 	std::cout << std::left << std::setw(16) << "Unsorted blocks" << ": " << printContainer(main, sizeOfElement) << std::endl;
 	extractPend(main, pend, sizeOfElement);
@@ -213,10 +228,15 @@ void	PmergeMe::sort(char **numbers, int n)
 
 	fillContainer(v, d, numbers, n);
 	std::multiset<unsigned int>	ref(v.begin(), v.end());
+	int max = maxComp(n);
+	g_comparisons = 0;
 	std::cout << std::left << std::setw(16) << "list"<< ": "  << printContainer(v, 0) << std::endl;
 	recursiveSort(v, 1);
 	if (!isSorted(v) || !sameElements(ref, v))
 		throw (std::runtime_error("OOPS"));
+	if (g_comparisons > max)
+		throw (std::runtime_error("Too many comparisons"));
 	std::cout << std::left << std::setw(16) << "sorted list"<< ": " << printContainer(v, 1) << std::endl;
+	std::cout << std::left << std::setw(16) << "comparisons" << ": " << g_comparisons << "/" << max << std::endl;
 }
 

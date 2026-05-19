@@ -45,10 +45,10 @@ fillContainer
 	}
 }
 
-template <typename Iterator, typename T>
+template <typename Iterator, typename T, typename Compare>
 Iterator
 StrideLowerBound
-(Iterator first, Iterator last, const T& value, std::size_t step)
+(Iterator first, Iterator last, const T& value, std::size_t step, Compare comp)
 {
     typedef typename std::iterator_traits<Iterator>::difference_type diff_t;
     diff_t total = std::distance(first, last);
@@ -59,7 +59,7 @@ StrideLowerBound
         diff_t mid = lo + (hi - lo) / 2;
         Iterator Candidate = first;
         std::advance(Candidate, mid * step + (step - 1));  // offset n-1
-        if (*Candidate < value) lo = mid + 1;
+        if (comp(*Candidate, value)) lo = mid + 1;
         else hi = mid;
     }
 

@@ -17,6 +17,7 @@ OBJ_DIR   = build
 # Sources files listing
 SRC_FILES = \
 	main.cpp \
+	utils.cpp \
 	\
 
 # Classes files listing
