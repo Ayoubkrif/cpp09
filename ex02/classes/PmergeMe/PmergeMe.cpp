@@ -196,9 +196,9 @@ appendCrumb
 // extract incomplete trailing block (miettes) into crumb, trim main to complete blocks only
 void
 extractCrumb
-(std::vector<int> &main, std::vector<int> &crumb, int sizeOfElement)
+(std::vector<int> &main, std::vector<int> &crumb, int sizeOfElement, int numberOfElements)
 {
-	std::vector<int>::size_type completeSize = (main.size() / sizeOfElement) * sizeOfElement;
+	std::vector<int>::size_type completeSize = numberOfElements * sizeOfElement;
 	crumb.assign(main.begin() + completeSize, main.end());
 	main.erase(main.begin() + completeSize, main.end());
 }
@@ -207,23 +207,42 @@ void
 recursiveSort
 (std::vector<int> &main, int sizeOfElement)
 {
-	std::vector<int> pend;
-	std::vector<int> crumb;
-	int	numberOfElement = main.size() / sizeOfElement;
+	int	numberOfElements = main.size() / sizeOfElement;
 
-	extractCrumb(main, crumb, sizeOfElement);
-	std::cout << std::left << std::setw(16) << "SWAP" << std::endl;
-	std::cout << std::left << std::setw(16) << "Before" << ": " << printContainer(main, sizeOfElement) << std::endl;
+	// SAFE
+	// extract crumb to not handle it in this recursion level
+	// crumb are numbers that are too few to compose an element
+	std::vector<int> crumb;
+	extractCrumb(main, crumb, sizeOfElement, numberOfElements);
+
+	// SAFE
+	// determine the greater 2 by 2
+	// then swap the greater right to the smaller
 	sort2By2(main, sizeOfElement);
-	std::cout << std::left << std::setw(16) << "After" << ": " << printContainer(main, sizeOfElement) << std::endl;
-	if (numberOfElement >= 4)
+	
+	// SAFE
+	// if we can compose at least 2 pair, recursively launch the algoritm
+	if (numberOfElements >= 4)
 		recursiveSort(main, sizeOfElement * 2);
 	std::cout << std::left << std::setw(16) << "Unsorted blocks" << ": " << printContainer(main, sizeOfElement) << std::endl;
+	
+	// SAFE BUT should put the element that lost against smaller main first in the main chain
+	// extract pending element that has to be inserted in the main chain = losers of sort2By2 + unpaired element
+	std::vector<int> pend;
 	extractPend(main, pend, sizeOfElement);
 	std::cout << std::left << std::setw(16) << "Main chain" << ": " << printContainer(main, sizeOfElement) << std::endl;
 	std::cout << std::left << std::setw(16) << "Pending Elements" << ": " << printContainer(pend, sizeOfElement) << std::endl;
+	
+	// UNSAFE BUG COME FROM HERE
+	// insert pending element into main chain:
+		// in the right insertion order
+		// following the bound of each element
+	// to decrease comparison
 	insertPend(main, pend, sizeOfElement);
 	std::cout << std::left << std::setw(16) << "Sorted blocks" << ": " << printContainer(main, sizeOfElement) << std::endl;
+
+	// SAFE
+	// append crumb that we extracted before to handle it in a lower recursion
 	appendCrumb(main, crumb);
 }
 
