@@ -34,6 +34,7 @@ PmergeMe
 ::~PmergeMe
 (void){}
 
+#include <algorithm>
 #include <deque>
 #include <set>
 #include <stdexcept>
@@ -51,14 +52,10 @@ countComp
 }
 
 // Put greaters elements of the main chain after smallers
-// duplicate smallers in a chain named pend
 void
 sort2By2
 (std::vector<int> &main, std::vector<int>::size_type sizeOfElement)
 {
-	std::vector<int> newMain;
-	// alloc main size in vector
-	newMain.reserve(main.size());
 	int	step = sizeOfElement * 2;
 	// for each pair of block of number (element)
 	for (std::vector<int>::iterator secondRangeElementToCompare = main.begin() + step - 1;
@@ -69,21 +66,11 @@ sort2By2
 		std::vector<int>::iterator	firstRangeEnd = firstRangeBegin + sizeOfElement;
 		std::vector<int>::iterator	firstRangeElementToCompare = firstRangeEnd - 1;
 		std::vector<int>::iterator	secondRangeBegin = firstRangeEnd;
-		std::vector<int>::iterator	secondRangeEnd = secondRangeElementToCompare + 1;
 		// Compare last number of each elements
 		if (countComp(*secondRangeElementToCompare, *firstRangeElementToCompare))
-		{
-			// Put greaters elements after smallers
-			newMain.insert(newMain.end(), secondRangeBegin, secondRangeEnd);
-			newMain.insert(newMain.end(), firstRangeBegin, firstRangeEnd);
-		}
-		else
-			// Put greaters elements after smallers
-			newMain.insert(newMain.end(), firstRangeBegin, secondRangeEnd);
+			// Put smaller before larger
+			std::swap_ranges(firstRangeBegin, firstRangeEnd, secondRangeBegin);
 	}
-	// append orphans
-	newMain.insert(newMain.end(), main.begin() + newMain.size(), main.end());
-	main.swap(newMain);
 }
 
 // append pending elements that lost against greaters in pend chain
@@ -111,8 +98,6 @@ extractPend
 		newMain.insert(newMain.end(), secondRangeBegin, secondRangeEnd);
 		pend.insert(pend.end(), firstRangeBegin, firstRangeEnd);
 	}
-	// append orphans in main
-	newMain.insert(newMain.end(), main.begin() + newMain.size() + pend.size(), main.end());
 	main.swap(newMain);
 }
 
@@ -200,13 +185,33 @@ insertPend
 }
 
 #include <iomanip>
+
+void
+appendCrumb
+(std::vector<int> &main, const std::vector<int> &crumb)
+{
+	main.insert(main.end(), crumb.begin(), crumb.end());
+}
+
+// extract incomplete trailing block (miettes) into crumb, trim main to complete blocks only
+void
+extractCrumb
+(std::vector<int> &main, std::vector<int> &crumb, int sizeOfElement)
+{
+	std::vector<int>::size_type completeSize = (main.size() / sizeOfElement) * sizeOfElement;
+	crumb.assign(main.begin() + completeSize, main.end());
+	main.erase(main.begin() + completeSize, main.end());
+}
+
 void
 recursiveSort
 (std::vector<int> &main, int sizeOfElement)
 {
 	std::vector<int> pend;
-	int	numberOfElement = main.size() / (sizeOfElement);
+	std::vector<int> crumb;
+	int	numberOfElement = main.size() / sizeOfElement;
 
+	extractCrumb(main, crumb, sizeOfElement);
 	std::cout << std::left << std::setw(16) << "SWAP" << std::endl;
 	std::cout << std::left << std::setw(16) << "Before" << ": " << printContainer(main, sizeOfElement) << std::endl;
 	sort2By2(main, sizeOfElement);
@@ -219,6 +224,7 @@ recursiveSort
 	std::cout << std::left << std::setw(16) << "Pending Elements" << ": " << printContainer(pend, sizeOfElement) << std::endl;
 	insertPend(main, pend, sizeOfElement);
 	std::cout << std::left << std::setw(16) << "Sorted blocks" << ": " << printContainer(main, sizeOfElement) << std::endl;
+	appendCrumb(main, crumb);
 }
 
 void	PmergeMe::sort(char **numbers, int n)
