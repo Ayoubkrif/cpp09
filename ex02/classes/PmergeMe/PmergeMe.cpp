@@ -107,7 +107,9 @@ extractPend
 
 //binary insertion
 // BORNE EXCLUSIF ?? (+1)
-int	placeNumber(std::vector<int> &main, std::vector<int> &pend, int nbToPlaceId, int borne, int sizeOfElement)
+int
+placeNumber
+(std::vector<int> &main, std::vector<int> &pend, int nbToPlaceId, int borne, int sizeOfElement)
 {
 	std::vector<int>::iterator toInsertBegin = pend.begin() + nbToPlaceId - sizeOfElement + 1;
 	std::vector<int>::iterator toInsertEnd = pend.begin() + nbToPlaceId + 1;
