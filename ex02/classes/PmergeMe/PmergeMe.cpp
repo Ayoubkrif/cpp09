@@ -84,7 +84,7 @@ extractPend
 	// alloc main size in vector
 	newMain.reserve(main.size() + sizeOfElement);
 	// new main chain is composed by first element + odd element
-	newMain.insert(newMain.end(), main.begin(), main.begin() + sizeOfElement);
+	newMain.insert(newMain.end(), main.begin(), main.begin() + 2 * sizeOfElement);
 
 	pend.reserve(main.size() / 2);
 
@@ -117,6 +117,8 @@ placeNumber
 	std::vector<int>::iterator toInsertBegin = pend.begin() + nbToPlaceId - sizeOfElement + 1;
 	std::vector<int>::iterator toInsertEnd = pend.begin() + nbToPlaceId + 1;
 
+	std::cout << "id :" << nbToPlaceId << std::endl;
+	std::cout << "pend" << ": " << printContainer(pend, sizeOfElement) << std::endl;
 	int	toCompare = pend[nbToPlaceId];
 	// me
 	// orphan has no winner pair: borne may exceed main.size(), clamp to end
@@ -124,7 +126,9 @@ placeNumber
 	if (searchEnd > main.end())
 		searchEnd = main.end();
 	std::vector<int>::iterator place = StrideLowerBound(main.begin(), searchEnd, toCompare, sizeOfElement, countComp);
+	// error
 	main.insert(place, toInsertBegin, toInsertEnd);
+	// error
 
 	std::vector<int>::difference_type i = place - main.begin();
 	return i;
@@ -141,20 +145,22 @@ insertPend
 	std::vector<int> insertionOrder = createinsertionOrder<std::vector<int> >(pend.size() / sizeOfElement);
 
 	std::cout << "size of jacob:" << insertionOrder.size() << std::endl;
+
 	// self explanatory
 	// sera utile pour savoir si on est passe d'un jacob a un autre dans la liste ou si on a decremente entre deux
-	int prevJacob = 0;
+	int prevInsertId = 0;
 
-	// valeur de decalage a l'initialisation de PairId
-	int mainShift = 0;
+	// valeur de decalage des gagnants de base 
+	// compte tenu du fait qu'il ya un perdant au debut
+	int mainShift = sizeOfElement;
 
 	// pour chaque pend dans la liste de jacob
-	for (std::vector<int>::iterator jacob = insertionOrder.begin(); jacob != insertionOrder.end(); ++jacob)
+	for (std::vector<int>::iterator toInsertId = insertionOrder.begin(); toInsertId != insertionOrder.end(); ++toInsertId)
 	{
-		// le dernier nombre de son element
-		int pendToInsertId = *jacob * sizeOfElement - 1;
+		// index of the beggining of the element
+		int pendToInsertId = *toInsertId * sizeOfElement;
 		// between 2 jacob
-		if (prevJacob > *jacob)
+		if (prevInsertId > *toInsertId)
 		{
 			// ajoute la paire precedente a holding
 			insertedSinceLastJacobsthal.push_back(lastInsertedMain);
@@ -167,11 +173,8 @@ insertPend
 			lastInsertedMain = placeNumber(main, pend, pendToInsertId, mainBoundInsertion, sizeOfElement);
 		}
 		// new jacob
-		else if (prevJacob < *jacob)
+		else
 		{
-			// decale de 1 sizeof element a chaque nouveau jacob sauf le premier
-			if (*jacob != 1)
-				mainShift += sizeOfElement;
 			// decale de taille de holding * sizeofelement
 			// Pareil que de decaler de jacob actu - precedent jacob 
 			// mais vu que la liste a ete generee avec les gradients decremente,
@@ -187,7 +190,7 @@ insertPend
 			std::cout << "mainBoundInsertion = " << mainBoundInsertion << std::endl;
 			lastInsertedMain = placeNumber(main, pend, pendToInsertId, mainBoundInsertion, sizeOfElement);
 		}
-		prevJacob = *jacob;
+		prevInsertId = *toInsertId;
 	}
 }
 
@@ -235,7 +238,10 @@ recursiveSort
 	// elements already sorted
 	// ie no pend
 	if (numberOfElements < 3)
+	{
+		appendCrumbs(main, crumbs);
 		return ;
+	}
 
 	// SAFE
 	// if we can compose at least 2 pair, recursively launch the algoritm
@@ -244,8 +250,8 @@ recursiveSort
 
 	std::cout << std::left << std::setw(16) << "after recursion" << ": " << printContainer(main, sizeOfElement) << std::endl;
 	
-	// SAFE BUT should put the element that lost against smaller main first in the main chain
-	// extract pending element that has to be inserted in the main chain = losers of sort2By2 + unpaired element
+	// compose the main chain : all winners and the first loser
+	// others are pending elements
 	std::vector<int> pend;
 	extractPend(main, pend, sizeOfElement);
 	std::cout << std::left << std::setw(16) << "Main chain" << ": " << printContainer(main, sizeOfElement) << std::endl;
@@ -257,6 +263,8 @@ recursiveSort
 		// following the bound of each element
 	// to decrease comparison
 	insertPend(main, pend, sizeOfElement);
+	std::cout << std::left << std::setw(16) << "main post-insert" << ": " << printContainer(main, sizeOfElement) << std::endl;
+	std::cout << std::left << std::setw(16) << "pend post-insert" << ": " << printContainer(pend, sizeOfElement) << std::endl;
 
 	// SAFE
 	// append crumb that we extracted before to handle it in a lower recursion
