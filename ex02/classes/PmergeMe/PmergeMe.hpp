@@ -70,40 +70,42 @@ StrideLowerBound
     return result;
 }
 
+// return a container that sort the indexes of the element to insert
+// in the right order of insertion
+// it don't handle 1 because the first element is already in the main chain
+#include <iostream>
 template <typename Container>
 Container
 createinsertionOrder
 (typename Container::size_type length)
 {
-	int current = 3;
-	int prev = 1;
-	int next;
-	Container jacobList;
+	int currentJacob = 3;
+	int prevJacob = 1;
+	int nextJacob;
+	Container insertionOrder;
 
 	if (length == 0)
-	   return jacobList;
-	// initial term
-	jacobList.push_back(1);
+	   return insertionOrder;
 
 	// when jacoblist is full
-	while (jacobList.size() != length)
+	while (insertionOrder.size() != length)
 	{
 		// if list is between 2 jacob number, bound at lenght
-		if (current > static_cast<int>(length))
-			current = length;
+		if (currentJacob > static_cast<int>(length))
+			currentJacob = length + 1;
 
 		// fill terms between 2 jacob with unused numbers
-		for (int i = current; i != prev; i--)
-			jacobList.push_back(i);
+		for (int i = currentJacob; i != prevJacob; i--)
+			insertionOrder.push_back(i - 2);
 
 		// find next term
-		next = current + 2 * prev;
+		nextJacob = currentJacob + 2 * prevJacob;
 
 		// update prev and current
-		prev = current;
-		current = next;
+		prevJacob = currentJacob;
+		currentJacob = nextJacob;
 	}
-	return jacobList;
+	return insertionOrder;
 }
 
 /*
