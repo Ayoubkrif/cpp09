@@ -75,28 +75,31 @@ sort2By2
 
 // append pending elements that lost against greaters in pend chain
 // trim them from main chain by putting it in newmain chain that is swapped
+// so i need to put the first element in the main / i don't need to call this function if there is less than 3 element
 void
 extractPend
-(std::vector<int> &main, std::vector<int> &pend, int sizeOfElement)
+(std::vector<int> &main, std::vector<int> &pend, int sizeOfElement, int numberOfElements)
 {
 	std::vector<int> newMain;
 	// alloc main size in vector
-	newMain.reserve(main.size());
-	pend.reserve(main.size());
-	int step = sizeOfElement * 2;
+	newMain.reserve(main.size() + sizeOfElement);
+	// new main chain is composed by first element + odd element
+	newMain.insert(newMain.end(), main.begin(), main.begin() + sizeOfElement);
+
+	pend.reserve(main.size() / 2);
+
+	std::vector<int>::iterator rangeEnd = ;
 	// for each pair of block of number (element)
-	for (std::vector<int>::iterator secondRangeElementToCompare = main.begin() + step - 1;
-	secondRangeElementToCompare < main.end();
-	secondRangeElementToCompare += step)
+	for (std::vector<int>::iterator rangeBegin = 2 * sizeOfElement; rangeBegin != main.end(); rangeBegin += sizeOfElement)
 	{
-		std::vector<int>::iterator	firstRangeBegin = secondRangeElementToCompare + 1 - step;
-		std::vector<int>::iterator	firstRangeEnd = firstRangeBegin + sizeOfElement;
-		std::vector<int>::iterator	secondRangeBegin = firstRangeEnd;
-		std::vector<int>::iterator	secondRangeEnd = secondRangeElementToCompare + 1;
-		// greater is already after smaller after swapMain
-		// so second range goes to main, first range goes to pend
-		newMain.insert(newMain.end(), secondRangeBegin, secondRangeEnd);
-		pend.insert(pend.end(), firstRangeBegin, firstRangeEnd);
+
+		// new main chain is composed by first element + odd element
+		if (step % 2 == 1)
+			newMain.insert(newMain.end(), main.begin() + step * sizeOfElement, );
+
+		// pending elements are even elements except first one
+		if (step % 2 == 0)
+			pend.insert(pend.end(), , );
 	}
 	main.swap(newMain);
 }
@@ -187,19 +190,19 @@ insertPend
 #include <iomanip>
 
 void
-appendCrumb
-(std::vector<int> &main, const std::vector<int> &crumb)
+appendCrumbs
+(std::vector<int> &main, const std::vector<int> &crumbs)
 {
-	main.insert(main.end(), crumb.begin(), crumb.end());
+	main.insert(main.end(), crumbs.begin(), crumbs.end());
 }
 
 // extract incomplete trailing block (miettes) into crumb, trim main to complete blocks only
 void
-extractCrumb
-(std::vector<int> &main, std::vector<int> &crumb, int sizeOfElement, int numberOfElements)
+extractCrumbs
+(std::vector<int> &main, std::vector<int> &crumbs, int sizeOfElement, int numberOfElements)
 {
 	std::vector<int>::size_type completeSize = numberOfElements * sizeOfElement;
-	crumb.assign(main.begin() + completeSize, main.end());
+	crumbs.assign(main.begin() + completeSize, main.end());
 	main.erase(main.begin() + completeSize, main.end());
 }
 
@@ -212,14 +215,21 @@ recursiveSort
 	// SAFE
 	// extract crumb to not handle it in this recursion level
 	// crumb are numbers that are too few to compose an element
-	std::vector<int> crumb;
-	extractCrumb(main, crumb, sizeOfElement, numberOfElements);
+	std::vector<int> crumbs;
+	extractCrumbs(main, crumbs, sizeOfElement, numberOfElements);
 
 	// SAFE
 	// determine the greater 2 by 2
 	// then swap the greater right to the smaller
 	sort2By2(main, sizeOfElement);
 	
+	// SAFE
+	// if there is less than 3 element,
+	// elements already sorted
+	// ie no pend
+	if (numberOfElements < 3)
+		return ;
+
 	// SAFE
 	// if we can compose at least 2 pair, recursively launch the algoritm
 	if (numberOfElements >= 4)
@@ -229,7 +239,7 @@ recursiveSort
 	// SAFE BUT should put the element that lost against smaller main first in the main chain
 	// extract pending element that has to be inserted in the main chain = losers of sort2By2 + unpaired element
 	std::vector<int> pend;
-	extractPend(main, pend, sizeOfElement);
+	extractPend(main, pend, sizeOfElement, numberOfElements);
 	std::cout << std::left << std::setw(16) << "Main chain" << ": " << printContainer(main, sizeOfElement) << std::endl;
 	std::cout << std::left << std::setw(16) << "Pending Elements" << ": " << printContainer(pend, sizeOfElement) << std::endl;
 	
@@ -243,7 +253,7 @@ recursiveSort
 
 	// SAFE
 	// append crumb that we extracted before to handle it in a lower recursion
-	appendCrumb(main, crumb);
+	appendCrumbs(main, crumbs);
 }
 
 void	PmergeMe::sort(char **numbers, int n)
