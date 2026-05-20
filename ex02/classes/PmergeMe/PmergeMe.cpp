@@ -78,7 +78,7 @@ sort2By2
 // so i need to put the first element in the main / i don't need to call this function if there is less than 3 element
 void
 extractPend
-(std::vector<int> &main, std::vector<int> &pend, int sizeOfElement, int numberOfElements)
+(std::vector<int> &main, std::vector<int> &pend, int sizeOfElement)
 {
 	std::vector<int> newMain;
 	// alloc main size in vector
@@ -88,18 +88,22 @@ extractPend
 
 	pend.reserve(main.size() / 2);
 
-	std::vector<int>::iterator rangeEnd = ;
-	// for each pair of block of number (element)
-	for (std::vector<int>::iterator rangeBegin = 2 * sizeOfElement; rangeBegin != main.end(); rangeBegin += sizeOfElement)
-	{
+	bool	even = true;
 
-		// new main chain is composed by first element + odd element
-		if (step % 2 == 1)
-			newMain.insert(newMain.end(), main.begin() + step * sizeOfElement, );
+	// for each pair of block of number (element)
+	for (std::vector<int>::iterator rangeBegin = main.begin() + 2 * sizeOfElement; rangeBegin != main.end(); rangeBegin += sizeOfElement)
+	{
+		std::vector<int>::iterator rangeEnd = rangeBegin + sizeOfElement;
 
 		// pending elements are even elements except first one
-		if (step % 2 == 0)
-			pend.insert(pend.end(), , );
+		if (even)
+			pend.insert(pend.end(), rangeBegin, rangeEnd);
+
+		// new main chain is composed by first element + odd element
+		else
+			newMain.insert(newMain.end(), rangeBegin, rangeEnd);
+
+		even = !even;
 	}
 	main.swap(newMain);
 }
@@ -210,6 +214,7 @@ void
 recursiveSort
 (std::vector<int> &main, int sizeOfElement)
 {
+	std::cout << std::left << std::setw(16) << "complete chain" << ": " << printContainer(main, sizeOfElement) << std::endl;
 	int	numberOfElements = main.size() / sizeOfElement;
 
 	// SAFE
@@ -222,6 +227,8 @@ recursiveSort
 	// determine the greater 2 by 2
 	// then swap the greater right to the smaller
 	sort2By2(main, sizeOfElement);
+
+	std::cout << std::left << std::setw(16) << "after swap" << ": " << printContainer(main, sizeOfElement) << std::endl;
 	
 	// SAFE
 	// if there is less than 3 element,
@@ -234,12 +241,13 @@ recursiveSort
 	// if we can compose at least 2 pair, recursively launch the algoritm
 	if (numberOfElements >= 4)
 		recursiveSort(main, sizeOfElement * 2);
-	std::cout << std::left << std::setw(16) << "Unsorted blocks" << ": " << printContainer(main, sizeOfElement) << std::endl;
+
+	std::cout << std::left << std::setw(16) << "after recursion" << ": " << printContainer(main, sizeOfElement) << std::endl;
 	
 	// SAFE BUT should put the element that lost against smaller main first in the main chain
 	// extract pending element that has to be inserted in the main chain = losers of sort2By2 + unpaired element
 	std::vector<int> pend;
-	extractPend(main, pend, sizeOfElement, numberOfElements);
+	extractPend(main, pend, sizeOfElement);
 	std::cout << std::left << std::setw(16) << "Main chain" << ": " << printContainer(main, sizeOfElement) << std::endl;
 	std::cout << std::left << std::setw(16) << "Pending Elements" << ": " << printContainer(pend, sizeOfElement) << std::endl;
 	
@@ -249,7 +257,6 @@ recursiveSort
 		// following the bound of each element
 	// to decrease comparison
 	insertPend(main, pend, sizeOfElement);
-	std::cout << std::left << std::setw(16) << "Sorted blocks" << ": " << printContainer(main, sizeOfElement) << std::endl;
 
 	// SAFE
 	// append crumb that we extracted before to handle it in a lower recursion
@@ -261,6 +268,10 @@ void	PmergeMe::sort(char **numbers, int n)
 	std::vector<int>			v;
 	std::deque<unsigned int>	d;
 
+	std::vector<int> j = createinsertionOrder<std::vector<int> >(9);
+	std::cout << std::left << std::setw(16) << "list"<< ": "  << printContainer(j, 0) << std::endl;
+	
+	return; 
 	fillContainer(v, d, numbers, n);
 	std::multiset<unsigned int>	ref(v.begin(), v.end());
 	int max = maxComp(n);
