@@ -268,21 +268,19 @@ void	PmergeMe::sort(char **numbers, int n)
 	std::vector<int>			v;
 	std::deque<unsigned int>	d;
 
-	std::vector<int> j = createinsertionOrder<std::vector<int> >(9);
-	std::cout << std::left << std::setw(16) << "list"<< ": "  << printContainer(j, 0) << std::endl;
-	
-	return; 
 	fillContainer(v, d, numbers, n);
 	std::multiset<unsigned int>	ref(v.begin(), v.end());
 	int max = maxComp(n);
 	g_comparisons = 0;
 	std::cout << std::left << std::setw(16) << "list"<< ": "  << printContainer(v, 0) << std::endl;
 	recursiveSort(v, 1);
+	std::cout << std::left << std::setw(16) << "sorted list"<< ": " << printContainer(v, 1) << std::endl;
 	if (!isSorted(v) || !sameElements(ref, v))
+	{
 		throw (std::runtime_error("OOPS"));
+	}
+	std::cout << std::left << std::setw(16) << "comparisons" << ": " << g_comparisons << "/" << max << std::endl;
 	if (g_comparisons > max)
 		throw (std::runtime_error("Too many comparisons"));
-	std::cout << std::left << std::setw(16) << "sorted list"<< ": " << printContainer(v, 1) << std::endl;
-	std::cout << std::left << std::setw(16) << "comparisons" << ": " << g_comparisons << "/" << max << std::endl;
 }
 
