@@ -73,7 +73,7 @@ StrideLowerBound
 // return a container that sort the indexes of the element to insert
 // in the right order of insertion
 // it don't handle 1 because the first element is already in the main chain
-#include <iostream>
+// it follow the jacobstahl sequence
 template <typename Container>
 Container
 createinsertionOrder
@@ -87,7 +87,7 @@ createinsertionOrder
 	if (length == 0)
 	   return insertionOrder;
 
-	// when jacoblist is full
+	// since we don't fill it fully
 	while (insertionOrder.size() != length)
 	{
 		// if list is between 2 jacob number, bound at lenght
