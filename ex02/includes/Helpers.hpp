@@ -38,6 +38,7 @@ sameElements
     return ref == other;
 }
 
+// surcharge pour imprimer le contenu des containers en fonction de la taille d'un element 
 template <typename Container>
 struct ContainerPrinter
 {
