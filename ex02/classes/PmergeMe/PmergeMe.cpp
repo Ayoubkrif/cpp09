@@ -253,7 +253,6 @@ recursiveSort
 		// in the right insertion order
 		// following the bound of each element
 		// to decrease comparison
-	// WARN: UNSAFE BUG COME FROM HERE
 	insertPend(main, pend, sizeOfElement, numberOfElements);
 
 
