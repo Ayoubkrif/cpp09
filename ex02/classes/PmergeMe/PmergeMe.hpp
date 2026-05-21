@@ -70,7 +70,7 @@ StrideLowerBound
     return result;
 }
 
-// return a container that sort the indexes of the element to insert
+// INFO: return a container that sort the indexes of the element to insert
 // in the right order of insertion
 // it don't handle 1 because the first element is already in the main chain
 // it follow the jacobstahl sequence
@@ -87,21 +87,21 @@ createinsertionOrder
 	if (length == 0)
 	   return insertionOrder;
 
-	// since we don't fill it fully
+	// INFO: since we don't fill it fully
 	while (insertionOrder.size() != length)
 	{
-		// if list is between 2 jacob number, bound at lenght
+		// INFO: if list is between 2 jacob number, bound at lenght
 		if (currentJacob > static_cast<int>(length))
 			currentJacob = length + 1;
 
-		// fill terms between 2 jacob with unused numbers
+		// INFO: fill terms between 2 jacob with unused numbers
 		for (int i = currentJacob; i != prevJacob; i--)
 			insertionOrder.push_back(i - 2);
 
-		// find next term
+		// INFO: find next term
 		nextJacob = currentJacob + 2 * prevJacob;
 
-		// update prev and current
+		// INFO: update prev and current
 		prevJacob = currentJacob;
 		currentJacob = nextJacob;
 	}
@@ -109,20 +109,17 @@ createinsertionOrder
 }
 
 /*
- * Variables:
+ * INFO: Variables:
  *		nbToPlaceId	(int)			: emplacement de la borne superieure qui a ete decalee, ce sera determine par cette fonction
  *		holding		(vector int)	: emplacement des insertions precedente ?
  *		sizeOfElement(int)			: taille d'un element donc ici valeur de decalage apres chaque comparaison reussie
  *		toAdd		(int)			: nombre d'element de decalage pour chaque element insere avant
- *
  * Resume:
  *		Pour chaque element dans holding:
  *			Si holding est plus petit que nbToPlaceId
  *				-decale nbToPlaceId de sizeOfElement
  *				-incremente toAdd
- * 
  *		retourne toAdd
- *
  *	Explication:
  *		Chaque fois que une precendente insertion (holding) est avant notre prochaine insertion:
  *			decaler (augmanter de sizeofelement l'index) nbToPlaceId

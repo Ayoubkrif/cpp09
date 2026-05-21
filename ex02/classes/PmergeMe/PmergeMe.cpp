@@ -118,8 +118,7 @@ placeNumber
 	int	toCompare = pend[nbToPlaceId];
 
 	// INFO: Index de la borne dans le main
-	// WARN: ne gere pas le non paire
-	// TODO: Borner en amont a end le non paire
+	// INFO: la borne pour l'orphelin vaut main.size()-1, passee depuis insertPend
 	std::vector<int>::iterator searchEnd = main.begin() + borne + 1;
 
 	// INFO: Binary search tout les sizeOfElement le lower bound de notre element a inserer
@@ -135,7 +134,7 @@ placeNumber
 
 void
 insertPend
-(std::vector<int> &main, std::vector<int> pend, int sizeOfElement)
+(std::vector<int> &main, std::vector<int> pend, int sizeOfElement, int numberOfElements)
 {
 	std::vector<int> insertionIndexesSinceLastJacobsthal;
 
@@ -152,10 +151,13 @@ insertPend
 	// compte tenu du fait qu'il ya un element perdant au debut de la main chain
 	int mainShift = sizeOfElement;
 
-	// INFO: pour chaque pend dans la liste de jacob
-	// WARN: ne gere plus l'element non paire
-	// TODO: il faut determiner sa borne dans la for
-	// sans le calculer a chaque iteration
+	// INFO: si numberOfElements est impair, le dernier element de pend est un orphelin
+	bool hasOdd = numberOfElements % 2 != 0;
+	// NOTE: il ya autant de pend que d'element dans la liste d'ordre d'insertion
+	int pendCount = static_cast<int>(insertionOrder.size());
+
+	// INFO: pour chaque pend dans la liste d'ordre d'insertion
+	// INFO: la borne de l'orphelin (si hasOdd) est forcee a main.size()-1 dans la boucle
 	for (std::vector<int>::iterator toInsertId = insertionOrder.begin(); toInsertId != insertionOrder.end(); ++toInsertId)
 	{
 		// INFO: index of the element
@@ -164,11 +166,20 @@ insertPend
 		// INFO: between 2 jacob
 		if (prevInsertId > *toInsertId)
 		{
-			// INFO: trouve la paire sans le decalge de holding
-			int mainBoundInsertion = pendToInsertId + mainShift;
-			// INFO: decale en fonction des insertions precedente pour tomber sur la borne exactement
-			considerPreviousInsertion(insertionIndexesSinceLastJacobsthal, mainBoundInsertion, sizeOfElement);
-	
+			// INFO: determine upper bound of the insertion
+			int mainBoundInsertion;
+			// INFO: orphelin : pas de paire associee, borne = main.end()
+			if (hasOdd && *toInsertId == pendCount - 1)
+				mainBoundInsertion = static_cast<int>(main.size()) - 1;
+			else
+			{
+				// INFO: trouve la paire sans le decalge de holding
+				mainBoundInsertion = pendToInsertId + mainShift;
+				// INFO: decale en fonction des insertions precedente pour tomber sur la borne exactement
+				considerPreviousInsertion(insertionIndexesSinceLastJacobsthal, mainBoundInsertion, sizeOfElement);
+			}
+			std::cout << "mainBoundInsertion = " << mainBoundInsertion << std::endl;
+
 			// INFO: insere et edite lastInsertedMain a l'insertion actuelle
 			// puis ajoute la position dans le main de l'insertion precedente
 			int insertionIndex = placeNumber(main, pend, pendToInsertId, mainBoundInsertion, sizeOfElement);
@@ -183,8 +194,18 @@ insertPend
 			mainShift += insertionIndexesSinceLastJacobsthal.size() * sizeOfElement;
 			insertionIndexesSinceLastJacobsthal.clear();
 
-			// INFO: trouve la paire
-			int mainBoundInsertion = pendToInsertId + mainShift;
+			// INFO: determine upper bound of the insertion
+			int mainBoundInsertion;
+			// INFO: orphelin : pas de paire associee, borne = main.end()
+			if (hasOdd && *toInsertId == pendCount - 1)
+				mainBoundInsertion = static_cast<int>(main.size()) - 1;
+			else
+			{
+				// INFO: trouve la paire sans le decalge de holding
+				mainBoundInsertion = pendToInsertId + mainShift;
+				// INFO: decale en fonction des insertions precedente pour tomber sur la borne exactement
+				considerPreviousInsertion(insertionIndexesSinceLastJacobsthal, mainBoundInsertion, sizeOfElement);
+			}
 			std::cout << "mainBoundInsertion = " << mainBoundInsertion << std::endl;
 
 			// INFO: insere et edite lastInsertedMain a l'insertion actuelle
@@ -260,7 +281,7 @@ recursiveSort
 		// following the bound of each element
 		// to decrease comparison
 	// WARN: UNSAFE BUG COME FROM HERE
-	insertPend(main, pend, sizeOfElement);
+	insertPend(main, pend, sizeOfElement, numberOfElements);
 
 	std::cout << std::left << std::setw(16) << "main post-insert" << ": " << printContainer(main, sizeOfElement) << std::endl;
 	std::cout << std::left << std::setw(16) << "pend post-insert" << ": " << printContainer(pend, sizeOfElement) << std::endl;
