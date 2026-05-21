@@ -157,62 +157,32 @@ insertPend
 	int pendCount = static_cast<int>(insertionOrder.size());
 
 	// INFO: pour chaque pend dans la liste d'ordre d'insertion
-	// INFO: la borne de l'orphelin (si hasOdd) est forcee a main.size()-1 dans la boucle
 	for (std::vector<int>::iterator toInsertId = insertionOrder.begin(); toInsertId != insertionOrder.end(); ++toInsertId)
 	{
-		// INFO: index of the element
 		int pendToInsertId = *toInsertId * sizeOfElement;
 
-		// INFO: between 2 jacob
-		if (prevInsertId > *toInsertId)
+		// INFO: new jacob : les insertions precedentes sont toutes avant la nouvelle borne
+		// donc on flush et on accumule leur decalage dans mainShift
+		if (prevInsertId <= *toInsertId)
 		{
-			// INFO: determine upper bound of the insertion
-			int mainBoundInsertion;
-			// INFO: orphelin : pas de paire associee, borne = main.end()
-			if (hasOdd && *toInsertId == pendCount - 1)
-				mainBoundInsertion = static_cast<int>(main.size()) - 1;
-			else
-			{
-				// INFO: trouve la paire sans le decalge de holding
-				mainBoundInsertion = pendToInsertId + mainShift;
-				// INFO: decale en fonction des insertions precedente pour tomber sur la borne exactement
-				considerPreviousInsertion(insertionIndexesSinceLastJacobsthal, mainBoundInsertion, sizeOfElement);
-			}
-			std::cout << "mainBoundInsertion = " << mainBoundInsertion << std::endl;
-
-			// INFO: insere et edite lastInsertedMain a l'insertion actuelle
-			// puis ajoute la position dans le main de l'insertion precedente
-			int insertionIndex = placeNumber(main, pend, pendToInsertId, mainBoundInsertion, sizeOfElement);
-			insertionIndexesSinceLastJacobsthal.push_back(insertionIndex);
-		}
-		// INFO: new jacob
-		else
-		{
-			// INFO: les insertions precedentes sont forcement avant le nouveau jacob
-			// donc decale de taille de previous insertion * sizeofelement (=nombres inseres avant la nouvelle borne)
-			// puis flush le vector
 			mainShift += insertionIndexesSinceLastJacobsthal.size() * sizeOfElement;
 			insertionIndexesSinceLastJacobsthal.clear();
-
-			// INFO: determine upper bound of the insertion
-			int mainBoundInsertion;
-			// INFO: orphelin : pas de paire associee, borne = main.end()
-			if (hasOdd && *toInsertId == pendCount - 1)
-				mainBoundInsertion = static_cast<int>(main.size()) - 1;
-			else
-			{
-				// INFO: trouve la paire sans le decalge de holding
-				mainBoundInsertion = pendToInsertId + mainShift;
-				// INFO: decale en fonction des insertions precedente pour tomber sur la borne exactement
-				considerPreviousInsertion(insertionIndexesSinceLastJacobsthal, mainBoundInsertion, sizeOfElement);
-			}
-			std::cout << "mainBoundInsertion = " << mainBoundInsertion << std::endl;
-
-			// INFO: insere et edite lastInsertedMain a l'insertion actuelle
-			// puis ajoute la position dans le main de l'insertion precedente
-			int insertionIndex = placeNumber(main, pend, pendToInsertId, mainBoundInsertion, sizeOfElement);
-			insertionIndexesSinceLastJacobsthal.push_back(insertionIndex);
 		}
+
+		// INFO: la borne de l'impair (si hasOdd) est forcee a main.size()-1 dans la boucle
+		// =  on cherche dans tout le main
+		// sinon : borne = paire associee + decalage des insertions precedentes du groupe
+		int mainBoundInsertion;
+		if (hasOdd && *toInsertId == pendCount - 1)
+			mainBoundInsertion = static_cast<int>(main.size()) - 1;
+		else
+		{
+			mainBoundInsertion = pendToInsertId + mainShift;
+			considerPreviousInsertion(insertionIndexesSinceLastJacobsthal, mainBoundInsertion, sizeOfElement);
+		}
+
+		int insertionIndex = placeNumber(main, pend, pendToInsertId, mainBoundInsertion, sizeOfElement);
+		insertionIndexesSinceLastJacobsthal.push_back(insertionIndex);
 		prevInsertId = *toInsertId;
 	}
 }
