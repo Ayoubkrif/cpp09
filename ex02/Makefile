@@ -38,6 +38,7 @@ INC_DIR = \
 NAME		= PmergeMe
 CC			= c++
 CFLAGS 		= -Wall -Wextra -Werror -std=c++98 -MMD -MP -g3
+FORBIDDEN_FLAGS = -O3 -march=native -funroll-loops -fomit-frame-pointer -DNDEBUG
 PREPROC		=
 INCLUDES	= $(addprefix -I, $(INC_DIR))
 
