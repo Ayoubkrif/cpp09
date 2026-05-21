@@ -262,7 +262,14 @@ recursiveSort
 	std::cout << std::left << std::setw(16) << "main sorted" << ": " << printContainer(main, sizeOfElement) << std::endl;
 }
 
-void	PmergeMe::sort(char **numbers, int n)
+static void
+sort
+(std::vector<int> &v)
+{
+	recursiveSort(v, 1);
+}
+
+void	PmergeMe::run(char **numbers, int n)
 {
 	std::vector<int>			v;
 	std::deque<unsigned int>	d;
@@ -272,8 +279,8 @@ void	PmergeMe::sort(char **numbers, int n)
 	int max = maxComp(n);
 	g_comparisons = 0;
 	std::cout << std::left << std::setw(16) << "list"<< ": "  << printContainer(v, 0) << std::endl;
-	recursiveSort(v, 1);
-	std::cout << std::left << std::setw(16) << "sorted list"<< ": " << printContainer(v, 1) << std::endl;
+	sort(v);
+	std::cout << std::left << std::setw(16) << "sorted list"<< ": " << printContainer(v, 0) << std::endl;
 	if (!isSorted(v) || !sameElements(ref, v))
 	{
 		std::cout << "ITS NOT SORTED !" << std::endl;

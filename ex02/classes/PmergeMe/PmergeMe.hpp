@@ -7,7 +7,7 @@
 class PmergeMe
 {
 	public:
-		static void	sort(char **, int);
+		static void	run(char **, int);
 	private:
 		PmergeMe(void);
 		PmergeMe(const PmergeMe &);

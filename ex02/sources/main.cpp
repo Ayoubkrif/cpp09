@@ -18,7 +18,7 @@ int	main(int argc, char *argv[])
 	}
 	try
 	{
-		PmergeMe::sort(argv + 1, argc - 1);
+		PmergeMe::run(argv + 1, argc - 1);
 	}
 	catch (std::exception &e)
 	{
