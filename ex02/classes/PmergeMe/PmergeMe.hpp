@@ -132,7 +132,7 @@ void considerPreviousInsertion
     for (typename Container::const_iterator it = prevInsertion.begin();
          it != prevInsertion.end(); ++it)
     {
-        if (*it <= nbToPlaceId)
+        if (*it < nbToPlaceId)
             nbToPlaceId += sizeOfElement;
     }
 }

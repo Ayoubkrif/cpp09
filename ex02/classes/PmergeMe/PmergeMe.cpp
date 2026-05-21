@@ -113,19 +113,20 @@ placeNumber
 (std::vector<int> &main, std::vector<int> &pend, int nbToPlaceId, int borne, int sizeOfElement)
 {
 	// INFO: Info de l'element a inserer
-	std::vector<int>::iterator toInsertBegin = pend.begin() + nbToPlaceId - sizeOfElement + 1;
-	std::vector<int>::iterator toInsertEnd = pend.begin() + nbToPlaceId + 1;
-	int	toCompare = pend[nbToPlaceId];
+	std::vector<int>::iterator toInsertBegin = pend.begin() + nbToPlaceId;
+	std::vector<int>::iterator toInsertEnd = toInsertBegin + sizeOfElement;
+	// NOTE: Representant est le dernier nombre de la range
+	int	toCompare = *(toInsertEnd - 1);
 
 	// INFO: Index de la borne dans le main
-	// INFO: la borne pour l'orphelin vaut main.size()-1, passee depuis insertPend
-	std::vector<int>::iterator searchEnd = main.begin() + borne + 1;
+	// la borne pour l'orphelin vaut main.size()-1, passee depuis insertPend
+	std::vector<int>::iterator searchEnd = main.begin() + borne;
 
 	// INFO: Binary search tout les sizeOfElement le lower bound de notre element a inserer
 	std::vector<int>::iterator place = StrideLowerBound(main.begin(), searchEnd, toCompare, sizeOfElement, countComp);
 
 	// PERF: insertion range
-	main.insert(place, toInsertBegin, toInsertEnd); // BUG: cause des acces avant le debut du vector
+	main.insert(place, toInsertBegin, toInsertEnd);
 
 	// INFO: index a considerer pour trouver les prochaines bornes a cause du decalage
 	std::vector<int>::difference_type i = place - main.begin();
@@ -140,8 +141,6 @@ insertPend
 
 	// INFO: cree l'ordre dans lequel les pends vont etre inseres
 	std::vector<int> insertionOrder = createinsertionOrder<std::vector<int> >(pend.size() / sizeOfElement);
-
-	std::cout << "size of jacob:" << insertionOrder.size() << std::endl;
 
 	// INFO: sera utile pour savoir si on est passe d'un jacob a un autre dans la liste
 	// ou si on a decremente entre deux
@@ -169,15 +168,15 @@ insertPend
 			insertionIndexesSinceLastJacobsthal.clear();
 		}
 
-		// INFO: la borne de l'impair (si hasOdd) est forcee a main.size()-1 dans la boucle
-		// =  on cherche dans tout le main
-		// sinon : borne = paire associee + decalage des insertions precedentes du groupe
+		// INFO: borne exclusive (debut du bloc suivant la paire associee)
+		// orphelin : main.end() = tout le main
+		// sinon : debut du bloc apres la paire associee, decale par les insertions precedentes du groupe
 		int mainBoundInsertion;
 		if (hasOdd && *toInsertId == pendCount - 1)
-			mainBoundInsertion = static_cast<int>(main.size()) - 1;
+			mainBoundInsertion = static_cast<int>(main.size());
 		else
 		{
-			mainBoundInsertion = pendToInsertId + mainShift;
+			mainBoundInsertion = pendToInsertId + mainShift + sizeOfElement;
 			considerPreviousInsertion(insertionIndexesSinceLastJacobsthal, mainBoundInsertion, sizeOfElement);
 		}
 
@@ -210,6 +209,7 @@ void
 recursiveSort
 (std::vector<int> &main, int sizeOfElement)
 {
+	for (int i = 1; i <= sizeOfElement; i *= 2) std::cout << "\t" << std::flush;
 	std::cout << std::left << std::setw(16) << "complete chain" << ": " << printContainer(main, sizeOfElement) << std::endl;
 	int	numberOfElements = main.size() / sizeOfElement;
 
@@ -222,28 +222,31 @@ recursiveSort
 	// then swap the greater right to the smaller
 	sort2By2(main, sizeOfElement);
 
+	for (int i = 1; i <= sizeOfElement; i *= 2) std::cout << "\t" << std::flush;
 	std::cout << std::left << std::setw(16) << "after swap" << ": " << printContainer(main, sizeOfElement) << std::endl;
 	
-	// HACK: if there is less than 3 element,
+	// PERF: if there is less than 3 element,
 	// elements already sorted
 	// ie no pend
 	if (numberOfElements < 3)
 	{
 		appendCrumbs(main, crumbs);
+		for (int i = 1; i <= sizeOfElement; i *= 2) std::cout << "\t" << std::flush;
+		std::cout << std::left << std::setw(16) << "main sorted" << ": " << printContainer(main, sizeOfElement) << std::endl;
 		return ;
 	}
 
 	// INFO: if we can compose at least 2 pair, recursively launch the algoritm
 	if (numberOfElements >= 4)
 		recursiveSort(main, sizeOfElement * 2);
-
-	std::cout << std::left << std::setw(16) << "after recursion" << ": " << printContainer(main, sizeOfElement) << std::endl;
 	
 	// INFO: compose the main chain : all winners and the first loser
 	// others are pending elements
 	std::vector<int> pend;
 	extractPend(main, pend, sizeOfElement);
+	for (int i = 1; i <= sizeOfElement; i *= 2) std::cout << "\t" << std::flush;
 	std::cout << std::left << std::setw(16) << "Main chain" << ": " << printContainer(main, sizeOfElement) << std::endl;
+	for (int i = 1; i <= sizeOfElement; i *= 2) std::cout << "\t" << std::flush;
 	std::cout << std::left << std::setw(16) << "Pending Elements" << ": " << printContainer(pend, sizeOfElement) << std::endl;
 	
 	// INFO: insert pending element into main chain:
@@ -253,11 +256,11 @@ recursiveSort
 	// WARN: UNSAFE BUG COME FROM HERE
 	insertPend(main, pend, sizeOfElement, numberOfElements);
 
-	std::cout << std::left << std::setw(16) << "main post-insert" << ": " << printContainer(main, sizeOfElement) << std::endl;
-	std::cout << std::left << std::setw(16) << "pend post-insert" << ": " << printContainer(pend, sizeOfElement) << std::endl;
 
 	// INFO: append crumb that we extracted before to handle it in a lower recursion
 	appendCrumbs(main, crumbs);
+	for (int i = 1; i <= sizeOfElement; i *= 2) std::cout << "\t" << std::flush;
+	std::cout << std::left << std::setw(16) << "main sorted" << ": " << printContainer(main, sizeOfElement) << std::endl;
 }
 
 void	PmergeMe::sort(char **numbers, int n)
@@ -274,6 +277,7 @@ void	PmergeMe::sort(char **numbers, int n)
 	std::cout << std::left << std::setw(16) << "sorted list"<< ": " << printContainer(v, 1) << std::endl;
 	if (!isSorted(v) || !sameElements(ref, v))
 	{
+		std::cout << "ITS NOT SORTED !" << std::endl;
 		throw (std::runtime_error("OOPS"));
 	}
 	std::cout << std::left << std::setw(16) << "comparisons" << ": " << g_comparisons << "/" << max << std::endl;
