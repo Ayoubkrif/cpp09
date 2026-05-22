@@ -64,42 +64,46 @@ void	PmergeMe::run(char **numbers, int n)
 	fillContainer(v, d, numbers, n);
 	std::multiset<unsigned int>	ref(v.begin(), v.end());
 	int max = maxComp(n);
-	std::cout << std::left << std::setw(16) << "list"<< ": "  << printContainer(v, 0) << std::endl;
+	std::cout << std::left << std::setw(16) << "unsorted list" << printContainer(v, 0) << std::endl;
 
 	// VECTOR
 	g_comparisons = 0;
-	clock_t vecStart = clock();
+	struct timespec vecStart, vecEnd;
+	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &vecStart);
 	sort(v, countComp);
-	clock_t vecEnd = clock();
+	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &vecEnd);
 	vecComp = g_comparisons;
+
+	double vecMs = ((vecEnd.tv_sec - vecStart.tv_sec) * 1e9 + (vecEnd.tv_nsec - vecStart.tv_nsec)) / 1e6;
 
 	// DEQUE
 	g_comparisons = 0;
-	clock_t deqStart = clock();
+	struct timespec deqStart, deqEnd;
+	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &deqStart);
 	sort(d, countComp);
-	clock_t deqEnd = clock();
+	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &deqEnd);
 	deqComp = g_comparisons;
 
-	double vecUs = static_cast<double>(vecEnd - vecStart) / CLOCKS_PER_SEC * 1e6;
-	double deqUs = static_cast<double>(deqEnd - deqStart) / CLOCKS_PER_SEC * 1e6;
+	double deqMs = ((deqEnd.tv_sec - deqStart.tv_sec) * 1e9 + (deqEnd.tv_nsec - deqStart.tv_nsec)) / 1e6;
 
 	// SORT TEST
-	std::cout << std::left << std::setw(16) << "sorted list"<< ": " << printContainer(v, 0) << std::endl;
+	std::cout << std::left << std::setw(16) << "sorted list" << printContainer(v, 0) << std::endl;
 	if (!isSorted(v) || !sameElements(ref, v)
 		|| !isSorted(d) || !sameElements(ref, d))
 	{
-		std::cout << std::left << std::setw(16) << "sorted list"<< ": " << printContainer(v, 0) << std::endl;
-		std::cout << std::left << std::setw(16) << "sorted list"<< ": " << printContainer(d, 0) << std::endl;
+		std::cout << std::left << std::setw(16) << "vec" << printContainer(v, 0) << std::endl;
+		std::cout << std::left << std::setw(16) << "deq" << printContainer(d, 0) << std::endl;
 		std::cout << "ITS NOT SORTED !" << std::endl;
 		throw (std::runtime_error("OOPS"));
 	}
 	// MAX COMP TEST
-	std::cout << std::left << std::setw(16) << "comparisons" << ": " << g_comparisons << "/" << max << std::endl;
+	std::cout << std::left << std::setw(16) << "comparisons" << g_comparisons << "/" << max << std::endl;
 	if (vecComp > max
 		|| deqComp > max)
 		throw (std::runtime_error("Too many comparisons"));
 
-	std::cout << std::fixed << std::setprecision(5);
-	std::cout << "Time to process a range of " << n << " elements with std::vector : " << vecUs << " us" << std::endl;
-	std::cout << "Time to process a range of " << n << " elements with std::deque  : " << deqUs << " us" << std::endl;
+	std::cout << std::left << std::setw(16) << std::fixed << std::setprecision(6)
+		<< "std::vector" << vecMs << " ms" << std::endl;
+	std::cout << std::left << std::setw(16) << std::fixed << std::setprecision(6)
+		<< "std::deque" << deqMs << " ms" << std::endl;
 }

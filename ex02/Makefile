@@ -59,8 +59,11 @@ $(NAME): $(OBJS)
 #compilation
 $(OBJ_DIR)/%.o: %.cpp
 	mkdir -p $(dir $@)
-	$(CC) -c $(CFLAGS) $(INCLUDES) \
-		$< -o $@
+	$(CC) -c \
+		$(CFLAGS) \
+		$(INCLUDES) \
+		$< -o $@ \
+		# $(FORBIDDEN_FLAGS) \
 
 # COMMENT
 -include $(DEPS)
