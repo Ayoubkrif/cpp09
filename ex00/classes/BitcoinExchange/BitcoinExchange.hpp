@@ -14,13 +14,14 @@ class BitcoinExchange
 {
 	public:
 		BitcoinExchange(const char *);
+		BitcoinExchange(const BitcoinExchange &);
+		BitcoinExchange	&operator=(const BitcoinExchange &);
 		~BitcoinExchange(void);
 
 	private:
 		const static std::map<std::string, float>	csv;
 
-/**/		BitcoinExchange(void);
-/**/		BitcoinExchange	operator=(const BitcoinExchange &);
+		BitcoinExchange(void);
 
 };
 

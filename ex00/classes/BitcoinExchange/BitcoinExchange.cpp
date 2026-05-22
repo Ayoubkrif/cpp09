@@ -83,7 +83,13 @@ BitcoinExchange::BitcoinExchange(void)
 	throw (std::runtime_error("Should not be called !"));
 }
 
-BitcoinExchange	BitcoinExchange::operator=(const BitcoinExchange &rhs)
+BitcoinExchange::BitcoinExchange(const BitcoinExchange &rhs)
+{
+	(void)rhs;
+	throw (std::runtime_error("Should not be called !"));
+}
+
+BitcoinExchange	&BitcoinExchange::operator=(const BitcoinExchange &rhs)
 {
 	(void)rhs;
 	throw (std::runtime_error("Should not be called !"));
@@ -143,18 +149,14 @@ bool	checkDateFormat(const std::string &date)
 }
 
 #include <limits>
+#include <algorithm>
+#include <cerrno>
 
 BitcoinExchange::BitcoinExchange(const char *path)
 {
     std::ifstream ifs(path, std::ios::binary);
     if (ifs.fail())
 		throw (std::runtime_error("Cannot open " + std::string(path)));
-
-	for (std::map<std::string, float>::const_iterator it = csv.begin(); it != csv.end() ; it++)
-	{
-	  std::cout << it->first << std::endl;
-	}
-	std::cout << std::endl;
 
 	std::string	line;
 	int			lineCount = 0;;
@@ -198,16 +200,21 @@ BitcoinExchange::BitcoinExchange(const char *path)
 			continue ;
 		}
 		// check num format / value
-		if (cell.second.find_first_not_of("0123456789") != std::string::npos)
+		if (cell.second.find_first_not_of("0123456789.") != std::string::npos
+			|| std::count(cell.second.begin(), cell.second.end(), '.') > 1)
 		{
-			std::cout << "Value must be number only line "+nbrToString(lineCount)+": '"+ line+"'" << std::endl;
+			std::cout << "Error: not a positive number." << std::endl;
 			continue ;
 		}
-		long int	nb = std::strtol(cell.second.c_str(), NULL, 10);
+		char		*endptr;
+		double		nb = std::strtod(cell.second.c_str(), &endptr);
 
-		if (errno || nb < 0 || nb > 1000)
+		if (endptr == cell.second.c_str() || *endptr != '\0' || nb < 0 || nb > 1000)
 		{
-			std::cout << "Value must be between 0 and 999 "+nbrToString(lineCount)+": '"+ line+"'" << std::endl;
+			if (nb < 0)
+				std::cout << "Error: not a positive number." << std::endl;
+			else
+				std::cout << "Error: too large a number." << std::endl;
 			continue ;
 		}
 		// check lower date
