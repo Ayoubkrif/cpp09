@@ -97,7 +97,7 @@ void	PmergeMe::run(char **numbers, int n)
 		throw (std::runtime_error("OOPS"));
 	}
 	// MAX COMP TEST
-	std::cout << std::left << std::setw(16) << "comparisons" << g_comparisons << "/" << max << std::endl;
+	std::cout << std::left << std::setw(16) << "comparisons" << g_comparisons /*<< "/" << max */<< std::endl;
 	if (vecComp > max
 		|| deqComp > max)
 		throw (std::runtime_error("Too many comparisons"));

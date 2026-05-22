@@ -1,6 +1,0 @@
-#!/bin/bash
-x=$1
-output=$(./PmergeMe $(shuf -i 1-$x -n $x) 2>&1)
-if [ $? -ne 0 ]; then
-    echo "$output"
-fi
