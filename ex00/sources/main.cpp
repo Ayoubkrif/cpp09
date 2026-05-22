@@ -8,13 +8,15 @@
 #include "BitcoinExchange.hpp"
 #include <exception>
 #include <iostream>
+#include <stdexcept>
 
 int	main(int argc, char *argv[])
 {
-	(void)argc, (void)argv;
 	try
 	{
-		BitcoinExchange("input.txt");
+		if (argc != 2)
+			throw (std::runtime_error("Usage ./btc input_file"));
+		BitcoinExchange((const char *)argv[1]);
 	}
 	catch (std::exception &e)
 	{
